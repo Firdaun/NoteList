@@ -7,7 +7,7 @@ const errorMiddleware = async (err, req, res, next) => {
     }
 
     if (err instanceof ResponseError) {
-        req.status(err.status).json({
+        res.status(err.status).json({
             errors: err.message
         })
     }else{
