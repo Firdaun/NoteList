@@ -1,6 +1,9 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
-export default function Navbar() {
+export default function Navbar({user}) {
+    
+    const firstName = user?.name ? user.name.split(" ")[0] : "User"
+
     return (
         <nav className="bg-fuchsia-50">
             <div className="max-w-7xl w-[90%] mx-auto">
@@ -10,7 +13,7 @@ export default function Navbar() {
                     </div>
 
                     <div className="flex items-center">
-                        <span className="text-gray-700 text-sm font-medium mr-4">Hi, Fahrul</span>
+                        <span className="text-gray-700 text-sm font-medium mr-4">Hi, <span className="text-gray-900 font-semibold">{firstName}</span></span>
                         <Link to="/profile" className="hover:cursor-pointer text-fuchsia-400 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-fuchsia-100 transition">
                             Profile
                         </Link>

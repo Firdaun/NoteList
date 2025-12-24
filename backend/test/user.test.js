@@ -97,7 +97,7 @@ describe('POST /api/users/login', () => {
 describe('GET /api/users/current', () => {
     beforeEach(async () => {
         await removeTestUser()
-        await createTestUser() // User dibuat dengan token "test"
+        await createTestUser()
     })
 
     afterEach(async () => {
@@ -148,7 +148,7 @@ describe('PATCH /api/users/current', () => {
         expect(result.body.data.username).toBe("test")
     })
 
-    it('should can update user name only', async () => {
+    it('should can update username only', async () => {
         const result = await supertest(app)
             .patch('/api/users/current')
             .set('Authorization', 'test')
@@ -170,9 +170,7 @@ describe('PATCH /api/users/current', () => {
 
         expect(result.status).toBe(200)
         
-        // Cek database apakah password berubah
         const user = await getTestUser();
-        // Password di db harus beda dengan hash "rahasia" (karena sudah diganti "baru")
         expect(user.password).not.toBe("rahasia"); 
     })
 })
@@ -195,7 +193,6 @@ describe('DELETE /api/users/logout', () => {
         expect(result.status).toBe(200)
         expect(result.body.data).toBe("OK")
 
-        // Pastikan token di database sudah dihapus (jadi null)
         const user = await getTestUser()
         expect(user.token).toBeNull()
     })

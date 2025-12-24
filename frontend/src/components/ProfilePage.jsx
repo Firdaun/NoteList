@@ -1,29 +1,113 @@
-import { Link, useNavigate } from "react-router";
-import { alertConfirm } from "../lib/alert";
-import { logout } from "../lib/user-api";
+import { Link, useNavigate, useOutletContext } from "react-router";
+import { alertConfirm, alertError, alertSuccess } from "../lib/alert";
+import { getUser, logoutAPI, updateUser } from "../lib/user-api";
+import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
     const navigate = useNavigate()
+    const { refreshUser } = useOutletContext()
+    const [name, setName] = useState("")
+    const token = localStorage.getItem("token")
+    const [isProfileLoading, setIsProfileLoading] = useState(false)
+    const [isPasswordLoading, setIsPasswordLoading] = useState(false)
+    const [passwordForm, setPasswordForm] = useState({
+        newPassword: "",
+        confirmPassword: ""
+    })
+    const [originalName, setOriginalName] = useState("")
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                if (!token) {
+                    navigate('/login')
+                    return
+                }
+                const result = await getUser(token)
+                setName(result.data.name)
+                setOriginalName(result.data.name)
+            } catch (error) {
+                alertError('Sesi habis silahkan login lagi')
+                localStorage.removeItem('token')
+                navigate('/login')
+            }
+        }
+        fetchUserData()
+    }, [token, navigate])
+
+    const handleUpdateProfile = async () => {
+        if (!name.trim()) {
+            return alertError('Nama tidak boleh kosong')
+        }
+        if (name === originalName) {
+            return alertError("⚠️ Nama kamu tidak berubah dari sebelumnya.");
+        }
+        setIsProfileLoading(true)
+        try {
+            await updateUser(token, { name: name })
+            setOriginalName(name)
+            if (refreshUser) refreshUser()
+            await alertSuccess('Nama berhasil diperbarui!')
+        } catch (error) {
+            alertError(error.message)
+        } finally {
+            setIsProfileLoading(false)
+        }
+    }
+
+    const handleUpdatePassword = async () => {
+        const { newPassword, confirmPassword } = passwordForm
+
+        if (!newPassword || !confirmPassword) {
+            return alertError('Mohon isi kedua kolom password')
+        }
+        if (newPassword !== confirmPassword) {
+            return alertError('Konfirmasi password tidak cocok!')
+        }
+        if (newPassword.length < 6) {
+            return alertError('Password minimal 6 karakter')
+        }
+
+        setIsPasswordLoading(true)
+
+        try {
+            await updateUser(token, { password: newPassword })
+            await alertSuccess('Password berhasil diganti!')
+
+            setPasswordForm({ newPassword: '', confirmPassword: '' })
+        } catch (error) {
+            alertError(error.message)
+        } finally {
+            setIsPasswordLoading(false)
+        }
+    }
 
     const handleLogout = async () => {
         const isConfirmed = await alertConfirm('Apakah kamu yakin ingin keluar')
-
         if (!isConfirmed) return
 
-        logout()
+        try {
+            await logoutAPI(token)
+        } catch (error) {
+            console.error('Gagal logout', error);
+        }
 
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+
+        await alertSuccess('Berhasil Logout')
         navigate('/login')
     }
     return (
         <div className="min-h-[calc(100vh-64px)] bg-gray-50 pb-20 relative overflow-hidden">
-            
+
             <div className="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none">
                 <div className="absolute top-20 right-[-10%] w-96 h-96 bg-fuchsia-200 rounded-full blur-3xl opacity-20"></div>
                 <div className="absolute bottom-20 left-[-10%] w-80 h-80 bg-pink-200 rounded-full blur-3xl opacity-20"></div>
             </div>
 
             <div className="max-w-5xl w-[90%] mx-auto pt-10">
-                
+
                 <div className="flex items-center gap-4 mb-8">
                     <Link to="/" className=" text-gray-400 hover:text-fuchsia-500 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
@@ -37,7 +121,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    
+
                     <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-dashed border-gray-100">
                             <div className="w-10 h-10 bg-fuchsia-100 text-fuchsia-500 rounded-full flex items-center justify-center">
@@ -57,21 +141,22 @@ export default function ProfilePage() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
                                     </div>
-                                    <input 
-                                        type="text" 
-                                        defaultValue="fahrul siddiq"
-                                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-2xl text-gray-700 focus:bg-white focus:outline-none focus:border-fuchsia-300 transition-all"
+                                    <input
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                    type="text"
+                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-2xl text-gray-700 focus:bg-white focus:outline-none focus:border-fuchsia-300 transition-all"
                                     />
                                 </div>
                             </div>
                         </div>
 
                         <div className="mt-auto">
-                            <button className="w-full py-3 px-4 bg-fuchsia-500 hover:bg-fuchsia-600 text-white font-bold rounded-xl shadow-lg shadow-fuchsia-200 hover:shadow-fuchsia-300 hover:-translate-y-1 transition-all cursor-pointer flex justify-center items-center gap-2">
+                            <button onClick={handleUpdateProfile} disabled={isProfileLoading} className="w-full py-3 px-4 bg-fuchsia-500 hover:bg-fuchsia-600 text-white font-bold rounded-xl shadow-lg shadow-fuchsia-200 hover:shadow-fuchsia-300 hover:-translate-y-1 transition-all cursor-pointer flex justify-center items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                                 </svg>
-                                Update Profil
+                                {isProfileLoading ? "Menyimpan..." : "Update Profil"}
                             </button>
                         </div>
                         <div className="mt-auto">
@@ -101,8 +186,10 @@ export default function ProfilePage() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                         </svg>
                                     </div>
-                                    <input 
-                                        type="password" 
+                                    <input
+                                        value={passwordForm.newPassword}
+                                        onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                                        type="password"
                                         placeholder="••••••••"
                                         className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-2xl text-gray-700 focus:bg-white focus:outline-none focus:border-purple-300 transition-all"
                                     />
@@ -117,8 +204,10 @@ export default function ProfilePage() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    <input 
-                                        type="password" 
+                                    <input
+                                        value={passwordForm.confirmPassword}
+                                        onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                                        type="password"
                                         placeholder="••••••••"
                                         className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-2xl text-gray-700 focus:bg-white focus:outline-none focus:border-purple-300 transition-all"
                                     />
@@ -127,11 +216,11 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="mt-auto">
-                            <button className="w-full py-3 px-4 bg-white border-2 border-gray-100 text-gray-600 font-bold rounded-xl hover:border-purple-200 hover:text-purple-600 hover:bg-purple-50 transition-all cursor-pointer flex justify-center items-center gap-2">
+                            <button onClick={handleUpdatePassword} disabled={isPasswordLoading} className="w-full py-3 px-4 bg-white border-2 border-gray-100 text-gray-600 font-bold rounded-xl hover:border-purple-200 hover:text-purple-600 hover:bg-purple-50 transition-all cursor-pointer flex justify-center items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                 </svg>
-                                Update Password
+                                {isPasswordLoading ? "Memproses..." : "Update Password"}
                             </button>
                         </div>
                     </div>
