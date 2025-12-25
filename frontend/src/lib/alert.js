@@ -36,7 +36,7 @@ export const alertInfo = async (message) => {
         icon: 'info',
         title: 'Sekedar info nih',
         text: message,
-        // Pakai warna biru muda (cyan) biar beda dengan success/error
-        confirmButtonColor: '#0ea5e9' 
+        confirmButtonColor: 'oklch(74% 0.238 322.16)' ,
+        iconColor: 'oklch(62.7% 0.265 303.9)'
     })
 }

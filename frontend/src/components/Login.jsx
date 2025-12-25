@@ -37,14 +37,7 @@ export default function Login() {
         }
         setIsLoading(true)
         try {
-            const result = await loginUser(formData)
-
-            if (result.data) {
-                localStorage.setItem("user", JSON.stringify({
-                    username: result.data.username,
-                    name: result.data.name
-                }))
-            }
+            await loginUser(formData)
             navigate('/')
         } catch (error) {
             alertError(error.message)
@@ -86,10 +79,8 @@ export default function Login() {
                                 ref={passwordRef}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
-                                        // Kalau Enter, langsung Login
                                         handleSubmit(e);
                                     } else {
-                                        // Kalau Panah, pakai logika navigasi biasa
                                         handleKeyDown(e, usernameRef, null);
                                     }
                                 }}

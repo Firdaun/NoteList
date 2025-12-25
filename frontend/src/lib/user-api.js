@@ -18,7 +18,7 @@ export const registerUser = async (data) => {
     }
 
     return result;
-};
+}
 
 export const loginUser = async (data) => {
     const response = await fetch(`${BASE_URL}/api/users/login`, {
@@ -37,7 +37,7 @@ export const loginUser = async (data) => {
     }
 
     return result;
-};
+}
 
 export const getUser = async () => {
     const response = await fetch(`${BASE_URL}/api/users/current`, {

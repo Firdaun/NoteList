@@ -1,11 +1,21 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 export default function Navbar({user}) {
+    const [isScrolled, setIsScrolled] = useState(false)
     
     const firstName = user?.name ? user.name.split(" ")[0] : "User"
 
+    useEffect(() => {
+        function handleScroll() {
+            setIsScrolled(window.scrollY > 0)
+        }
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
+
     return (
-        <nav className="bg-fuchsia-50">
+        <nav className={`bg-fuchsia-50 fixed right-0 rounded-b-2xl left-0 z-10 ${isScrolled ? 'shadow-lg' : ''}`}>
             <div className="max-w-7xl w-[90%] mx-auto">
                 <div className="flex justify-between h-16 items-center">
                     <div className="shrink-0 flex items-center">

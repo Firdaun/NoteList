@@ -1,5 +1,5 @@
 import { Link, useNavigate, useOutletContext } from "react-router";
-import { alertConfirm, alertError, alertSuccess } from "../lib/alert";
+import { alertConfirm, alertError, alertInfo, alertSuccess } from "../lib/alert";
 import { getUser, logout, logoutAPI, updateUser } from "../lib/user-api";
 import { useEffect, useRef, useState } from "react";
 
@@ -16,6 +16,9 @@ export default function ProfilePage() {
         newPassword: "",
         confirmPassword: ""
     })
+    const showPasswordWarning = () => {
+        alertInfo("Jangan lupain passwordnya karena gak ada fitur reset password. Catet kalo perlu!");
+    }
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -104,7 +107,7 @@ export default function ProfilePage() {
         navigate('/login')
     }
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-gray-50 pb-20 relative overflow-hidden">
+        <div className="pt-16 min-h-[calc(100vh-64px)] bg-gray-50 pb-20 relative overflow-hidden">
 
             <div className="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none">
                 <div className="absolute top-20 right-[-10%] w-96 h-96 bg-fuchsia-200 rounded-full blur-3xl opacity-20"></div>
@@ -147,6 +150,12 @@ export default function ProfilePage() {
                                         </svg>
                                     </div>
                                     <input
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault()
+                                                handleUpdateProfile()
+                                            }
+                                        }}
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         type="text"
@@ -204,7 +213,14 @@ export default function ProfilePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-gray-600 mb-2">Konfirmasi Password</label>
+                                <div className="flex mb-2">
+                                    <label className="block text-sm font-semibold text-gray-600">Konfirmasi Password</label>
+                                    <button className="ml-1 cursor-pointer" type="button">
+                                        <svg onClick={showPasswordWarning} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="oklch(62.7% 0.265 303.9)" className="w-5 h-5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                                        </svg>
+                                    </button>
+                                </div>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <svg className="h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
