@@ -27,3 +27,34 @@ export const getTestUser = async () => {
         }
     })
 }
+
+// ---------------- category ---------------- //
+export const removeTestCategory = async () => {
+    return prismaClient.category.deleteMany({
+        where: {
+            username: "test"
+        }
+    });
+}
+
+export const createTestCategory = async () => {
+    return prismaClient.category.create({
+        data: {
+            name: "Elektronik",
+            username: "test"
+        }
+    });
+}
+
+export const createManyTestCategories = async () => {
+    // Buat 5 kategori sekaligus untuk ngetes limit
+    await prismaClient.category.createMany({
+        data: [
+            { name: "Kategori 1", username: "test" },
+            { name: "Kategori 2", username: "test" },
+            { name: "Kategori 3", username: "test" },
+            { name: "Kategori 4", username: "test" },
+            { name: "Kategori 5", username: "test" },
+        ]
+    });
+}
