@@ -1,4 +1,4 @@
-import { categoryService } from "../service/category.service"
+import { categoryService } from "../service/category.service.js"
 
 const create = async (req, res, next) => {
     try {
