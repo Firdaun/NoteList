@@ -153,10 +153,31 @@ const logout = async (username) => {
     })
 }
 
+const remove = async (username) => {
+    // Kita cek dulu user-nya ada atau tidak (Konsisten dengan gaya coding kamu di note.service)
+    const userCount = await prismaClient.users.count({
+        where: {
+            username: username
+        }
+    })
+
+    if (userCount !== 1) {
+        throw new ResponseError(404, "User not found")
+    }
+
+    // Hapus user (Note & Category otomatis terhapus jika di schema.prisma pakai onDelete: Cascade)
+    return prismaClient.users.delete({
+        where: {
+            username: username
+        }
+    })
+}
+
 export const userService = {
     register,
     login,
     get,
     update,
-    logout
+    logout,
+    remove
 }

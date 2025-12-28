@@ -1,92 +1,168 @@
-### Register User Baru
-POST http://localhost:3000/api/users/register
+@baseUrl = http://localhost:3000/api
+
+### ============================================================================
+### BAGIAN 1: USER MANAGEMENT (Auth & Profile)
+### ============================================================================
+
+### 1. Register User Baru
+# Kalau error "username already exists", ganti usernamenya
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
-    "username": "fahrul_tiktok",
-    "password": "rahasia",
-    "name": "Fahrul TikTok"
+    "username": "fahrul_pro",
+    "password": "password123",
+    "name": "Fahrul Backend"
 }
 
-### Login User (PENTING: Jalankan ini biar dapet Cookie)
-POST http://localhost:3000/api/users/login
+### 2. Login User (WAJIB JALANIN INI DULUAN BIAR DAPET COOKIE)
+# Tanpa ini, request di bawahnya bakal "Unauthorized"
+POST {{baseUrl}}/users/login
 Content-Type: application/json
 
 {
-    "username": "fahrul_tiktok",
-    "password": "rahasia"
+    "username": "fahrul_pro",
+    "password": "password123"
 }
 
-### Cek User Login (Harus otomatis bawa cookie dari login di atas)
-GET http://localhost:3000/api/users/current
+### 3. Cek User yang Sedang Login
+GET {{baseUrl}}/users/current
 Accept: application/json
 
-### Update User
-PATCH http://localhost:3000/api/users/current
+### 4. Update Profile User
+PATCH {{baseUrl}}/users/current
 Content-Type: application/json
 
 {
-    "name": "Fahrul Pro Backend"
+    "name": "Fahrul Si Paling Fullstack"
 }
 
-### Logout
-DELETE http://localhost:3000/api/users/logout
+### 5. Logout (Tes doang, habis ini login lagi ya kalau mau tes bawahnya)
+DELETE {{baseUrl}}/users/logout
 Accept: application/json
 
 
-### --------------------------------------------------------
-### TESTING CATEGORY
-### --------------------------------------------------------
+### ============================================================================
+### BAGIAN 2: CATEGORY MANAGEMENT
+### ============================================================================
 
-### Create Category
-POST http://localhost:3000/api/categories
+### 6. Buat Kategori: "Elektronik"
+# @name catElektronik
+POST {{baseUrl}}/categories
 Content-Type: application/json
 
 {
-    "name": "Belajar Backend"
+    "name": "Elektronik"
 }
 
-### Get List Category
-GET http://localhost:3000/api/categories
-Accept: application/json
-
-
-### --------------------------------------------------------
-### TESTING NOTE
-### --------------------------------------------------------
-
-### Create Note (Pastikan ID Category-nya benar, sesuaikan manual ya)
-POST http://localhost:3000/api/notes
+### 7. Buat Kategori: "Kuliah"
+# @name catKuliah
+POST {{baseUrl}}/categories
 Content-Type: application/json
 
 {
-    "title": "Belajar REST Client",
-    "content": "Ternyata gampang banget pake file .http",
-    "categoryId": 1
+    "name": "Kuliah"
 }
 
-### Get List Note (Paging Default)
-GET http://localhost:3000/api/notes
-Accept: application/json
-
-### Search Note
-GET http://localhost:3000/api/notes?search=REST
-Accept: application/json
-
-### Get Note By ID (Ganti angka 1 dengan ID yang ada)
-GET http://localhost:3000/api/notes/1
-Accept: application/json
-
-### Update Note
-PUT http://localhost:3000/api/notes/1
+### 8. Buat Kategori: "Pribadi"
+# @name catPribadi
+POST {{baseUrl}}/categories
 Content-Type: application/json
 
 {
-    "title": "Judul Diganti",
-    "content": "Konten juga diganti",
+    "name": "Pribadi"
+}
+
+### 9. Lihat Semua Daftar Kategori
+# Cek ID-nya di sini buat dipake bikin Note manual
+GET {{baseUrl}}/categories
+Accept: application/json
+
+
+### ============================================================================
+### BAGIAN 3: NOTE MANAGEMENT (Create, Read, Update, Delete)
+### ============================================================================
+
+### 10. Buat Note Manual (Pastikan categoryId valid dari list di atas)
+POST {{baseUrl}}/notes
+Content-Type: application/json
+
+{
+    "title": "Beli Laptop Baru",
+    "content": "Macbook Pro M3 buat ngoding backend",
+    "categoryId": 243
+}
+
+### 11. [CANGGIH] Simulasi Frontend: Bikin Kategori Baru + Langsung Bikin Note
+# Skenario: User klik 'Buat Kategori' -> 'Ide Bisnis', lalu langsung simpan Note.
+# Kita pake fitur variable @name dari request sebelumnya
+
+# Step A: Bikin Kategori
+# @name createNewCat
+POST {{baseUrl}}/categories
+Content-Type: application/json
+
+{
+    "name": "Ide Bisnis 2025"
+}
+
+### Step B: Langsung Bikin Note pake ID Kategori barusan
+@newCategoryId = {{createNewCat.response.body.data.id}}
+
+POST {{baseUrl}}/notes
+Content-Type: application/json
+
+{
+    "title": "Jualan Kopi AI",
+    "content": "Bikin robot barista pake ChatGPT",
+    "categoryId": {{newCategoryId}}
+}
+
+### 12. Get All Notes (Paging Default 10)
+GET {{baseUrl}}/notes
+Accept: application/json
+
+### 13. Search Note (Cari judul/konten)
+GET {{baseUrl}}/notes?search=Laptop
+Accept: application/json
+
+### 14. Filter Note by Category ID (Misal ID 1)
+GET {{baseUrl}}/notes?categoryId=246
+Accept: application/json
+
+### 15. Filter Note by Category NAME (Fitur Dropdown Frontend)
+GET {{baseUrl}}/notes?category=Ide Bisnis 2025
+Accept: application/json
+
+### 16. Get Detail Note by ID (Ganti ID sesuai data kamu)
+GET {{baseUrl}}/notes/109
+Accept: application/json
+
+### 17. Update Note
+# Ingat: ID di body optional karena bakal ditimpa sama ID di URL
+PUT {{baseUrl}}/notes/109
+Content-Type: application/json
+
+{
+    "title": "Beli Laptop Second Aja",
+    "content": "Budget menipis gara-gara jajan seblak",
     "id": 1
 }
 
-### Delete Note
-DELETE http://localhost:3000/api/notes/1
+### 18. Delete Note
+DELETE {{baseUrl}}/notes/109
+Accept: application/json
+
+
+### ============================================================================
+### BAGIAN 4: ZONA BAHAYA (Hapus Akun)
+### ============================================================================
+
+### 19. Hapus Akun Permanen
+# Peringatan: User, Category, dan Note milik user ini akan hilang semua!
+DELETE {{baseUrl}}/users/current
+Accept: application/json
+
+### 20. Bukti Akun Hilang (Harus Error 401 Unauthorized)
+GET {{baseUrl}}/users/current
 Accept: application/json

@@ -18,19 +18,19 @@ model Users {
   password String  @db.VarChar(100)
   name     String  @db.VarChar(100)
   token    String? @db.VarChar(100)
-  
-  notes    Notes[]
+
+  notes      Notes[]
   categories Category[]
 
   @@map("users")
 }
 
 model Category {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(100)
-  username  String   @db.VarChar(100)
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(100)
 
-  user Users @relation(fields: [username], references: [username])
+  username String @db.VarChar(100)
+  user     Users  @relation(fields: [username], references: [username], onDelete: Cascade)
 
   notes Notes[]
 
@@ -44,12 +44,12 @@ model Notes {
   content   String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  username  String   @db.VarChar(100)
-  users      Users     @relation(fields: [username], references: [username])
+
+  username String @db.VarChar(100)
+  users    Users  @relation(fields: [username], references: [username], onDelete: Cascade)
 
   categoryId Int?
-  category Category? @relation(fields: [categoryId], references: [id])
+  category   Category? @relation(fields: [categoryId], references: [id])
 
   @@map("notes")
 }

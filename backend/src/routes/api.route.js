@@ -11,6 +11,8 @@ userApiRouter.use(authMiddleware)
 userApiRouter.get('/api/users/current', userController.get)
 userApiRouter.patch('/api/users/current', userController.update)
 userApiRouter.delete('/api/users/logout', userController.logout)
+userApiRouter.delete('/api/users/current', userController.remove)
+
 // CategoryAPI
 userApiRouter.post('/api/categories', categoryController.create)
 userApiRouter.get('/api/categories', categoryController.get)
