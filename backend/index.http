@@ -1,0 +1,92 @@
+### Register User Baru
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+    "username": "fahrul_tiktok",
+    "password": "rahasia",
+    "name": "Fahrul TikTok"
+}
+
+### Login User (PENTING: Jalankan ini biar dapet Cookie)
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+
+{
+    "username": "fahrul_tiktok",
+    "password": "rahasia"
+}
+
+### Cek User Login (Harus otomatis bawa cookie dari login di atas)
+GET http://localhost:3000/api/users/current
+Accept: application/json
+
+### Update User
+PATCH http://localhost:3000/api/users/current
+Content-Type: application/json
+
+{
+    "name": "Fahrul Pro Backend"
+}
+
+### Logout
+DELETE http://localhost:3000/api/users/logout
+Accept: application/json
+
+
+### --------------------------------------------------------
+### TESTING CATEGORY
+### --------------------------------------------------------
+
+### Create Category
+POST http://localhost:3000/api/categories
+Content-Type: application/json
+
+{
+    "name": "Belajar Backend"
+}
+
+### Get List Category
+GET http://localhost:3000/api/categories
+Accept: application/json
+
+
+### --------------------------------------------------------
+### TESTING NOTE
+### --------------------------------------------------------
+
+### Create Note (Pastikan ID Category-nya benar, sesuaikan manual ya)
+POST http://localhost:3000/api/notes
+Content-Type: application/json
+
+{
+    "title": "Belajar REST Client",
+    "content": "Ternyata gampang banget pake file .http",
+    "categoryId": 1
+}
+
+### Get List Note (Paging Default)
+GET http://localhost:3000/api/notes
+Accept: application/json
+
+### Search Note
+GET http://localhost:3000/api/notes?search=REST
+Accept: application/json
+
+### Get Note By ID (Ganti angka 1 dengan ID yang ada)
+GET http://localhost:3000/api/notes/1
+Accept: application/json
+
+### Update Note
+PUT http://localhost:3000/api/notes/1
+Content-Type: application/json
+
+{
+    "title": "Judul Diganti",
+    "content": "Konten juga diganti",
+    "id": 1
+}
+
+### Delete Note
+DELETE http://localhost:3000/api/notes/1
+Accept: application/json
