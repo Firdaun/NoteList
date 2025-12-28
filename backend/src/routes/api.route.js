@@ -1,8 +1,8 @@
 import express from "express"
-import { userController } from "../controller/user.controller.js"
-import { authMiddleware } from "../middleware/auth.middleware.js"
-import { categoryController } from "../controller/category.controller.js"
-import { noteController } from "../controller/note.controller.js"
+import { userController } from "../controller/user.controller"
+import { authMiddleware } from "../middleware/auth.middleware"
+import { categoryController } from "../controller/category.controller"
+import { noteController } from "../controller/note.controller"
 
 const userApiRouter = new express.Router()
 

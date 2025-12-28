@@ -1,4 +1,4 @@
-import { noteService } from "../service/note.service.js"
+import { noteService } from "../service/note.service"
 
 const create = async (req, res, next) => {
     try {

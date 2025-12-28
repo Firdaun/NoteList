@@ -1,7 +1,7 @@
-import { prismaClient } from "../application/database.js"
-import { ResponseError } from "../error/response.error.js"
-import { categoryValidation } from "../validation/category.validation.js"
-import { validate } from "../validation/validation.js"
+import { prismaClient } from "../application/database"
+import { ResponseError } from "../error/response.error"
+import { categoryValidation } from "../validation/category.validation"
+import { validate } from "../validation/validation"
 
 const create = async (user, request) => {
     const category = validate(categoryValidation.createCategoryValidation, request)

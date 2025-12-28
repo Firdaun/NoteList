@@ -1,4 +1,4 @@
-import { prismaClient } from '../application/database.js'
+import { prismaClient } from '../application/database'
 
 export const authMiddleware = async (req, res, next) => {
     const token = req.cookies.token
