@@ -1,12 +1,12 @@
 import { prismaClient } from "../application/database.js"
 import { ResponseError } from "../error/response.error.js"
-import { getUserValidation, loginUserValidation, registerUserValidation, updateUserValidation } from "../validation/user.validation.js"
+import { userValidation } from "../validation/user.validation.js"
 import { validate } from "../validation/validation.js"
-import bcrypt from "bcrypt";
-import { v4 as uuid } from "uuid";
+import { v4 as uuid } from "uuid"
+import bcrypt from "bcrypt"
 
 const register = async (request) => {
-    const user = validate(registerUserValidation, request)
+    const user = validate(userValidation.registerUserValidation, request)
 
     const countUser = await prismaClient.users.count({
         where: {
@@ -15,7 +15,7 @@ const register = async (request) => {
     })
 
     if (countUser === 1) {
-        throw new ResponseError(400, "username already exists");
+        throw new ResponseError(400, "username already exists")
     }
 
     user.password = await bcrypt.hash(user.password, 10)
@@ -31,7 +31,7 @@ const register = async (request) => {
 
 
 const login = async (request) => {
-    const loginRequest = validate(loginUserValidation, request)
+    const loginRequest = validate(userValidation.loginUserValidation, request)
 
     const user = await prismaClient.users.findUnique({
         where: {
@@ -67,7 +67,7 @@ const login = async (request) => {
 }
 
 const get = async (username) => {
-    username = validate(getUserValidation, username)
+    username = validate(userValidation.getUserValidation, username)
 
     const user = await prismaClient.users.findUnique({
         where: {
@@ -87,7 +87,7 @@ const get = async (username) => {
 }
 
 const update = async (request) => {
-    const user = validate(updateUserValidation, request)
+    const user = validate(userValidation.updateUserValidation, request)
 
     const userInDatabase = await prismaClient.users.findUnique({
         where: {
@@ -106,11 +106,12 @@ const update = async (request) => {
     }
 
     if (user.password) {
-        const isSamePassword = await bcrypt.compare(user.password, userInDatabase.password);
+        const isSamePassword = await bcrypt.compare(user.password, userInDatabase.password)
 
         if (isSamePassword) {
-            throw new ResponseError(400, "Password kamu sama dengan yang sebelumnya");
+            throw new ResponseError(400, "Password kamu sama dengan yang sebelumnya")
         }
+
         data.password = await bcrypt.hash(user.password, 10)
     }
 
@@ -127,7 +128,7 @@ const update = async (request) => {
 }
 
 const logout = async (username) => {
-    username = validate(getUserValidation, username)
+    username = validate(userValidation.getUserValidation, username)
 
     const user = await prismaClient.users.findUnique({
         where: {
@@ -136,7 +137,7 @@ const logout = async (username) => {
     })
 
     if (!user) {
-        throw new ResponseError(404, 'user not found');
+        throw new ResponseError(404, 'user not found')
     }
 
     return prismaClient.users.update({
@@ -152,7 +153,7 @@ const logout = async (username) => {
     })
 }
 
-export default {
+export const userService = {
     register,
     login,
     get,

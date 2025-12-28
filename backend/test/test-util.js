@@ -58,3 +58,33 @@ export const createManyTestCategories = async () => {
         ]
     });
 }
+
+export const removeTestNote = async () => {
+    return prismaClient.notes.deleteMany({
+        where: {
+            username: "test"
+        }
+    });
+}
+
+export const createTestNote = async () => {
+    // Kita butuh ID Category dulu karena Note wajib punya categoryId
+    const category = await prismaClient.category.findFirst({
+        where: {
+            username: "test"
+        }
+    });
+
+    if (!category) {
+        throw new Error("Test Category must be created first!");
+    }
+
+    return prismaClient.notes.create({
+        data: {
+            title: "Test Note",
+            content: "Test Content",
+            username: "test",
+            categoryId: category.id
+        }
+    });
+}

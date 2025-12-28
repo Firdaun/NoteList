@@ -1,23 +1,21 @@
-import { validate } from "../validation/validation.js";
-import { createNoteValidation, getNoteIdValidation, getNoteValidation, updateNoteValidation } from "../validation/note.validation.js";
-import { prismaClient } from "../application/database.js";
-import { ResponseError } from "../error/response.error.js";
+import { prismaClient } from "../application/database.js"
+import { ResponseError } from "../error/response.error.js"
+import { noteValidation } from "../validation/note.validation.js"
+import { validate } from "../validation/validation.js"
 
 const create = async (user, request) => {
-    const note = validate(createNoteValidation, request);
-    note.username = user.username;
+    const note = validate(noteValidation.createNoteValidation, request)
+    note.username = user.username
 
-    // CEK KATEGORI (Wajib Ada & Valid Milik User)
-    // Tidak perlu 'if (note.categoryId)' lagi karena validasi di atas sudah .required()
     const categoryCount = await prismaClient.category.count({
         where: {
             username: user.username,
             id: note.categoryId
         }
-    });
+    })
 
     if (categoryCount !== 1) {
-        throw new ResponseError(404, "Category not found");
+        throw new ResponseError(404, 'Category not found')
     }
 
     return prismaClient.notes.create({
@@ -26,28 +24,29 @@ const create = async (user, request) => {
             id: true,
             title: true,
             content: true,
-            createdAt: true,
-            categoryId: true
+            categoryId: true,
+            createdAt: true
         }
-    });
+    })
 }
 
 const get = async (user, request) => {
-    const data = validate(getNoteValidation, request);
-    const skip = (data.page - 1) * data.size;
+    const data = validate(noteValidation.getNoteValidation, request)
 
-    const filters = [];
+    const skip = (data.page - 1) * data.size
+
+    const filters = []
     filters.push({
         username: user.username
-    });
+    })
 
     if (data.search) {
         filters.push({
             OR: [
                 { title: { contains: data.search } },
-                { content: { contains: data.search } }
+                { content: { contains: data.search } },
             ]
-        });
+        })
     }
 
     const notes = await prismaClient.notes.findMany({
@@ -59,13 +58,13 @@ const get = async (user, request) => {
         include: {
             category: true
         }
-    });
+    })
 
     const totalItems = await prismaClient.notes.count({
         where: {
             AND: filters
         }
-    });
+    })
 
     return {
         data: notes,
@@ -78,7 +77,7 @@ const get = async (user, request) => {
 }
 
 const getById = async (user, noteId) => {
-    noteId = validate(getNoteIdValidation, noteId);
+    noteId = validate(noteValidation.getNoteIdValidation, noteId)
 
     const note = await prismaClient.notes.findFirst({
         where: {
@@ -88,39 +87,39 @@ const getById = async (user, noteId) => {
         include: {
             category: true
         }
-    });
+    })
 
     if (!note) {
-        throw new ResponseError(404, "Note not found");
+        throw new ResponseError(404, 'Note not found')
     }
 
-    return note;
+    return note
 }
 
 const update = async (user, request) => {
-    const note = validate(updateNoteValidation, request);
+    const note = validate(noteValidation.updateNoteValidation, request)
 
     const totalInDatabase = await prismaClient.notes.count({
         where: {
             username: user.username,
             id: note.id
         }
-    });
+    })
 
     if (totalInDatabase !== 1) {
-        throw new ResponseError(404, "Note not found");
+        throw new ResponseError(404, 'Note not found')
     }
 
-    // Jika user mengirim categoryId baru, validasi dulu
     if (note.categoryId) {
         const categoryCount = await prismaClient.category.count({
             where: {
                 username: user.username,
                 id: note.categoryId
             }
-        });
+        })
+
         if (categoryCount !== 1) {
-            throw new ResponseError(404, "Category not found");
+            throw new ResponseError(404, 'Category not found')
         }
     }
 
@@ -140,31 +139,31 @@ const update = async (user, request) => {
             categoryId: true,
             updatedAt: true
         }
-    });
+    })
 }
 
 const remove = async (user, noteId) => {
-    noteId = validate(getNoteIdValidation, noteId);
+    noteId = validate(noteValidation.getNoteIdValidation, noteId)
 
     const totalInDatabase = await prismaClient.notes.count({
         where: {
             username: user.username,
             id: noteId
         }
-    });
+    })
 
     if (totalInDatabase !== 1) {
-        throw new ResponseError(404, "Note not found");
+        throw new ResponseError(404, 'Note not found')
     }
 
     return prismaClient.notes.delete({
         where: {
             id: noteId
         }
-    });
+    })
 }
 
-export default {
+export const noteService = {
     create,
     get,
     getById,

@@ -1,10 +1,10 @@
 import { prismaClient } from "../application/database.js"
 import { ResponseError } from "../error/response.error.js"
-import { createCategoryValidation, updateCategoryValidation } from "../validation/category.validation.js"
-import { validate } from "../validation/validation"
+import { categoryValidation } from "../validation/category.validation.js"
+import { validate } from "../validation/validation.js"
 
 const create = async (user, request) => {
-    const category = validate(createCategoryValidation, request)
+    const category = validate(categoryValidation.createCategoryValidation, request)
     category.username = user.username
 
     const totalCategory = await prismaClient.category.count({
@@ -14,7 +14,7 @@ const create = async (user, request) => {
     })
 
     if (totalCategory >= 5) {
-        throw new ResponseError(400, "Category limit reached!");
+        throw new ResponseError(400, "Category limit reached!")
     }
 
     return prismaClient.category.create({
@@ -39,7 +39,7 @@ const get = async (user) => {
 }
 
 const update = async (user, request) => {
-    const category = validate(updateCategoryValidation, request)
+    const category = validate(categoryValidation.updateCategoryValidation, request)
     const totalInDatabase = await prismaClient.category.count({
         where: {
             username: user.username,
@@ -65,7 +65,7 @@ const update = async (user, request) => {
     })
 }
 
-export default {
+export const categoryService = {
     create,
     get,
     update
