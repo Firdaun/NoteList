@@ -16,7 +16,8 @@ const get = async (req, res, next) => {
         const request = {
             page: req.query.page,
             size: req.query.size,
-            search: req.query.search
+            search: req.query.search,
+            category: req.query.category
         }
         const result = await noteService.get(req.user, request)
         res.status(200).json(result)

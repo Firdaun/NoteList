@@ -80,7 +80,7 @@ const get = async (username) => {
     })
 
     if (!user) {
-        throw new ResponseError(404, 'user nou found')
+        throw new ResponseError(404, 'user not found')
     }
 
     return user

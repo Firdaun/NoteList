@@ -1,29 +1,83 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
+import { getCategories, getNotes } from "./lib/note-api";
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 
 export default function App() {
     const [isOpen, setIsOpen] = useState(false)
     const menuRef = useRef(null)
-    const components = [
-        {
-            title: "Pengeluaran Bulanan",
-            content: "Rincian belanja sayur, listrik, dan Netflix bulan ini. Jangan lupa bayar tagihan internet tanggal 20.",
-            createdAt: "2024-06-01",
-            category: "Finance"
-        },
-        {
-            title: "Ide Skripsi",
-            content: "Bikin aplikasi pencatat keuangan tapi pake AI buat deteksi struk belanja otomatis.",
-            createdAt: "2024-06-05",
-            category: "Study"
-        },
-    ]
-    const categories = [
-        { id: 1, name: "Elektronik", to: "/" },
-        { id: 2, name: "Pakaian Pria", to: "/" },
-        { id: 3, name: "Pakaian Wanita", to: "/" },
-        { id: 4, name: "Hobi & Mainan", to: "/" },
-    ]
+    const [categories, setCategories] = useState([])
+    const [searchParams, setSearchParams] = useSearchParams()
+    const page = parseInt(searchParams.get("page") || "1")
+    const [search, setSearch] = useState("")
+    const [debouncedSearch, setDebouncedSearch] = useState("")
+    const [selectedCategory, setSelectedCategory] = useState(null)
+
+    useEffect(() => {
+        getCategories()
+            .then(res => setCategories(res.data))
+            .catch(err => console.error("Gagal load kategori", err))
+    }, [])
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search)
+            if (search !== debouncedSearch) {
+                setSearchParams(prev => {
+                    prev.set("page", 1)
+                    return prev
+                })
+            }
+        }, 500)
+        return () => clearTimeout(timer)
+    }, [search])
+
+    const {
+        data: notesData,
+        isLoading,
+        isPlaceholderData
+    } = useQuery({
+        queryKey: ['notes', page, debouncedSearch, selectedCategory?.name],
+        queryFn: () => getNotes({
+            page: page,
+            size: 11,
+            search: debouncedSearch,
+            category: selectedCategory ? selectedCategory.name : ''
+        }),
+        placeholderData: keepPreviousData,
+        staleTime: 5000
+    })
+
+    const notes = notesData?.data || []
+    const totalPages = notesData?.paging?.total_page || 0
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setSearchParams(prev => {
+                prev.set("page", newPage)
+                return prev
+            })
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+    }
+
+    const getPaginationGroup = () => {
+        if (totalPages <= 5) {
+            return Array.from({ length: totalPages }, (_, i) => i + 1)
+        }
+        if (page <= 3) {
+            return [1, 2, 3, 'jump-next', totalPages]
+        }
+        if (page >= totalPages - 2) {
+            return [1, 'jump-prev', totalPages - 2, totalPages - 1, totalPages]
+        }
+        return [1, 'jump-prev', page, 'jump-next', totalPages]
+    }
+
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' }
+        return new Date(dateString).toLocaleDateString('id-ID', options)
+    }
 
     useEffect(() => {
         function handleClickOutside(e) {
@@ -40,7 +94,7 @@ export default function App() {
     }, [])
 
     return (
-        <div className="pt-16 min-h-screen bg-gray-50 pb-20">
+        <div className="pt-16 min-h-screen bg-gray-50 pb-27">
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-fuchsia-200 rounded-full blur-3xl opacity-20"></div>
                 <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-200 rounded-full blur-3xl opacity-20"></div>
@@ -53,24 +107,34 @@ export default function App() {
                         <h1 className="text-4xl font-bold text-gray-800 mb-2">
                             Catatan Kamu <span className="text-2xl">✨</span>
                         </h1>
-                        <p className="text-gray-500">Simpan semua ide cemerlangmu di sini.</p>
+                        {isPlaceholderData && <p className="text-xs text-fuchsia-400 mt-1 animate-pulse">Memuat data baru...</p>}
                     </div>
                     <div className="flex">
                         <div className="relative w-full lg:w-96 group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <div className="absolute top-4 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg className="h-5 w-5 text-gray-400 group-focus-within:text-fuchsia-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
                             <input
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                                 type="text"
                                 className="block w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-fuchsia-300 transition-all shadow-sm"
                                 placeholder="Cari catatan..."
                             />
+                            {search && (
+                                <div onClick={() => {
+                                    setSearch("")
+                                    setSelectedCategory(null)
+                                }} className="absolute right-3 top-3.25 text-gray-400 group-focus-within:text-fuchsia-500 hover:cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentcolor" viewBox="0 0 256 256"><path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+                                </div>
+                            )}
                         </div>
                         <div ref={menuRef} onClick={() => setIsOpen(!isOpen)} className="text-gray-500 select-none cursor-pointer relative">
                             <div className="p-3 h-full rounded-xl flex items-center justify-center bg-white border-gray-100 border-2 shadow-sm">
-                                <h1>Kategori</h1>
+                                <span>{selectedCategory ? selectedCategory.name : "Kategori"}</span>
                                 <svg
                                     className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,14 +143,33 @@ export default function App() {
                             </div>
                             <div className={`absolute top-full right-2 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 transition-all duration-200 ease-out origin-top-right
                                 ${isOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
-                                <ul className="py-1">
+                                <ul className="py-1 max-h-60 overflow-y-auto">
+
+                                    <li>
+                                        <div
+                                            onClick={() => {
+                                                setSelectedCategory(null)
+                                                setIsOpen(false)
+                                                setSearchParams(prev => {
+                                                    prev.set("page", 1)
+                                                    return prev
+                                                })
+                                            }}
+                                            className={`block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400 cursor-pointer border-b border-gray-50 font-semibold
+                                            ${selectedCategory === null ? 'text-fuchsia-500' : 'text-gray-600'}`}>
+                                            Semua Kategori
+                                        </div>
+                                    </li>
+
                                     {categories.map((cat) => (
                                         <li key={cat.id}>
                                             <Link
                                                 to={cat.to}
                                                 className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400"
-                                                onClick={() => setIsOpen(false)}
-                                            >
+                                                onClick={() => {
+                                                    setSelectedCategory(cat)
+                                                    setIsOpen(false)
+                                                }}>
                                                 {cat.name}
                                             </Link>
                                         </li>
@@ -107,20 +190,45 @@ export default function App() {
                         <span className="mt-3 font-semibold text-fuchsia-400 group-hover:text-fuchsia-600">Buat Baru</span>
                     </Link>
 
-                    {components.map((note, index) => (
+                    {isLoading && (
+                        [...Array(11)].map((_, i) => (
+                            <div key={i} className="h-60 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm animate-pulse">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="h-5 bg-gray-200 rounded w-1/3"></div>
+                                    <div className="h-5 bg-gray-200 rounded w-1/3"></div>
+                                </div>
+
+                                <div className="h-7 bg-gray-200 rounded w-3/4 mb-4"></div>
+
+                                <div className="space-y-2 mb-auto">
+                                    <div className="h-4 bg-gray-200 rounded w-full"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-full"></div>
+                                </div>
+
+                                <div className="mt-14 h-4 bg-gray-200 rounded w-1/3"></div>
+                            </div>
+                        ))
+                    )}
+
+                    {!isLoading && notes.length === 0 && (
+                        <div className="col-span-1 sm:col-span-2 lg:col-span-2 flex flex-col items-center justify-center h-60 text-gray-400 border-2 border-dashed border-gray-200 rounded-3xl">
+                            <p>Belum ada catatan nih...</p>
+                        </div>
+                    )}
+
+                    {notes.map((note) => (
                         <Link
-                            key={index}
-                            to={`/${index}`}
-                            className="relative flex flex-col h-60 bg-white rounded-2xl p-6 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
-                        >
+                            key={note.id}
+                            to={`/${note.id}`}
+                            className="relative flex flex-col h-60 bg-white rounded-2xl p-6 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-fuchsia-400 to-pink-400 opacity-100 transition-opacity"></div>
 
                             <div className="flex justify-between items-start mb-3">
                                 <span className="text-xs font-bold px-2 py-1 rounded-lg bg-fuchsia-100 text-fuchsia-600 transition-colors uppercase tracking-wider">
-                                    {note.category || 'Note'}
+                                    {note.category ? note.category.name : 'Uncategorized'}
                                 </span>
                                 <span className="text-xs text-gray-400 font-medium">
-                                    {note.createdAt}
+                                    {formatDate(note.createdAt)}
                                 </span>
                             </div>
 
@@ -141,6 +249,77 @@ export default function App() {
                         </Link>
                     ))}
                 </div>
+
+                {totalPages > 1 && (
+                    <div className="fixed bottom-6 left-0 w-full flex justify-center z-50 pointer-events-none">
+                        <nav className="pointer-events-auto flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 p-2 transition-all transform hover:-translate-y-1">
+
+                            <button
+                                onClick={() => handlePageChange(page - 1)}
+                                disabled={page === 1}
+                                className={`cursor-pointer px-3 py-2 rounded-xl transition-all duration-200 flex items-center font-medium text-sm
+                                    ${page === 1
+                                        ? 'text-gray-300 cursor-not-allowed'
+                                        : 'text-gray-600 hover:bg-fuchsia-50 hover:text-fuchsia-500'}`}>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 mr-1">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                                </svg>
+                                Prev
+                            </button>
+
+                            {getPaginationGroup().map((item, index) => {
+                                if (item === 'jump-prev') {
+                                    return (
+                                        <button
+                                            key={'prev-' + index}
+                                            onClick={() => handlePageChange(page - 3)}
+                                            className="cursor-pointer w-10 h-10 flex items-center justify-center text-gray-400 hover:bg-fuchsia-50 hover:text-fuchsia-500 rounded-xl transition-colors font-bold pb-2"
+                                            title="Mundur 3 halaman">
+                                            ...
+                                        </button>
+                                    )
+                                }
+
+                                if (item === 'jump-next') {
+                                    return (
+                                        <button
+                                            key={'next-' + index}
+                                            onClick={() => handlePageChange(page + 3)}
+                                            className="cursor-pointer w-10 h-10 flex items-center justify-center text-gray-400 hover:bg-fuchsia-50 hover:text-fuchsia-500 rounded-xl transition-colors font-bold pb-2"
+                                            title="Lompat 3 halaman">
+                                            ...
+                                        </button>
+                                    )
+                                }
+
+                                return (
+                                    <button
+                                        key={item}
+                                        onClick={() => handlePageChange(item)}
+                                        className={`cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl font-bold transition-all
+                                            ${page === item
+                                                ? 'bg-linear-to-r from-fuchsia-400 to-pink-400 text-white shadow-md shadow-fuchsia-200 transform scale-105'
+                                                : 'text-gray-500 hover:bg-fuchsia-50 hover:text-fuchsia-500'}`}>
+                                        {item}
+                                    </button>
+                                )
+                            })}
+
+                            <button
+                                onClick={() => handlePageChange(page + 1)}
+                                disabled={page === totalPages}
+                                className={`cursor-pointer px-3 py-2 rounded-xl transition-all duration-200 flex items-center font-medium text-sm
+                                    ${page === totalPages
+                                        ? 'text-gray-300 cursor-not-allowed'
+                                        : 'text-gray-600 hover:bg-fuchsia-50 hover:text-fuchsia-500'}`}>
+                                Next
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 ml-1">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </button>
+                        </nav>
+                    </div>
+                )}
 
             </section>
         </div>

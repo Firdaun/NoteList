@@ -49,7 +49,7 @@ model Notes {
   users    Users  @relation(fields: [username], references: [username], onDelete: Cascade)
 
   categoryId Int?
-  category   Category? @relation(fields: [categoryId], references: [id])
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@map("notes")
 }

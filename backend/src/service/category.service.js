@@ -65,8 +65,42 @@ const update = async (user, request) => {
     })
 }
 
+const remove = async (user, categoryId) => {
+    // Validasi ID (menggunakan schema validasi getCategoryValidation yg isinya cuma number)
+    categoryId = validate(categoryValidation.getCategoryValidation, categoryId)
+
+    // Cek apakah kategori itu milik user yang sedang login
+    const totalInDatabase = await prismaClient.category.count({
+        where: {
+            username: user.username,
+            id: categoryId
+        }
+    })
+
+    if (totalInDatabase !== 1) {
+        throw new ResponseError(404, "Category not found")
+    }
+
+    // 1. HAPUS NOTES (CASCADE MANUAL)
+    // Kita hapus semua notes yang punya categoryId ini dan milik user ini
+    await prismaClient.notes.deleteMany({
+        where: {
+            username: user.username,
+            categoryId: categoryId
+        }
+    })
+
+    // 2. HAPUS KATEGORI
+    return prismaClient.category.delete({
+        where: {
+            id: categoryId
+        }
+    })
+}
+
 export const categoryService = {
     create,
     get,
-    update
+    update,
+    remove
 }

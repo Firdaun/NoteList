@@ -16,7 +16,7 @@ const login = async (req, res, next) => {
         const result = await userService.login(req.body)
         res.cookie('token', result.token, {
             httpOnly: true,
-            secure: false,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
             maxAge: 24 * 60 * 60 * 1000
         })

@@ -222,3 +222,36 @@ describe('DELETE /api/users/logout', () => {
         expect(result.body.errors).toBeDefined()
     })
 })
+
+describe('DELETE /api/users/current', () => {
+    beforeEach(async () => {
+        await removeTestUser()
+        await createTestUser()
+    })
+
+    afterEach(async () => {
+        await removeTestUser()
+    })
+
+    it('should can delete current user', async () => {
+        const result = await supertest(app)
+            .delete('/api/users/current')
+            .set('Cookie', 'token=test')
+
+        expect(result.status).toBe(200)
+        expect(result.body.data).toBe("OK")
+
+        // Verifikasi: Coba cari user di database, harusnya null (hilang)
+        const user = await getTestUser()
+        expect(user).toBeNull()
+    })
+
+    it('should reject delete if token is invalid', async () => {
+        const result = await supertest(app)
+            .delete('/api/users/current')
+            .set('Cookie', 'token=salah') // Token ngawur
+
+        expect(result.status).toBe(401)
+        expect(result.body.errors).toBeDefined()
+    })
+})

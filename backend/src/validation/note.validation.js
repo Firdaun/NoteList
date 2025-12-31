@@ -9,7 +9,8 @@ const createNoteValidation = Joi.object({
 const getNoteValidation = Joi.object({
     page: Joi.number().min(1).positive().default(1),
     size: Joi.number().min(1).positive().max(100).default(10),
-    search: Joi.string().optional()
+    search: Joi.string().optional(),
+    category: Joi.string().optional()
 })
 
 const getNoteIdValidation = Joi.number().positive().required()

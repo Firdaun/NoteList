@@ -49,6 +49,16 @@ const get = async (user, request) => {
         })
     }
 
+    if (data.category) {
+        filters.push({
+            category: {
+                name: {
+                    contains: data.category
+                }
+            }
+        })
+    }
+
     const notes = await prismaClient.notes.findMany({
         where: {
             AND: filters

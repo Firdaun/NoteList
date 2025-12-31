@@ -21,8 +21,8 @@ POST {{baseUrl}}/users/login
 Content-Type: application/json
 
 {
-    "username": "fahrul_pro",
-    "password": "password123"
+    "username": "fahrul",
+    "password": "123456"
 }
 
 ### 3. Cek User yang Sedang Login
@@ -88,9 +88,9 @@ POST {{baseUrl}}/notes
 Content-Type: application/json
 
 {
-    "title": "Beli Laptop Baru",
-    "content": "Macbook Pro M3 buat ngoding backend",
-    "categoryId": 243
+    "title": "The future",
+    "content": "Hellllllll nahhhhhhh mementokkan set up pc aku?",
+    "categoryId": 271
 }
 
 ### 11. [CANGGIH] Simulasi Frontend: Bikin Kategori Baru + Langsung Bikin Note

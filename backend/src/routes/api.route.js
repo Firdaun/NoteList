@@ -17,6 +17,7 @@ userApiRouter.delete('/api/users/current', userController.remove)
 userApiRouter.post('/api/categories', categoryController.create)
 userApiRouter.get('/api/categories', categoryController.get)
 userApiRouter.put('/api/categories/:categoryId', categoryController.update)
+userApiRouter.delete('/api/categories/:categoryId', categoryController.remove)
 // Note API
 userApiRouter.post('/api/notes', noteController.create)
 userApiRouter.get('/api/notes', noteController.get)
