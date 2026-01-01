@@ -71,12 +71,8 @@ const logout = async (req, res, next) => {
 
 const remove = async (req, res, next) => {
     try {
-        // req.user.username didapat dari authMiddleware
         await userService.remove(req.user.username)
-        
-        // PENTING: Hapus cookie token juga, karena user sudah tidak ada
         res.clearCookie('token')
-
         res.status(200).json({
             data: "OK"
         })

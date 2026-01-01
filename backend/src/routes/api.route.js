@@ -7,6 +7,7 @@ import { noteController } from "../controller/note.controller.js"
 const userApiRouter = new express.Router()
 
 userApiRouter.use(authMiddleware)
+
 // User API
 userApiRouter.get('/api/users/current', userController.get)
 userApiRouter.patch('/api/users/current', userController.update)
@@ -18,6 +19,7 @@ userApiRouter.post('/api/categories', categoryController.create)
 userApiRouter.get('/api/categories', categoryController.get)
 userApiRouter.put('/api/categories/:categoryId', categoryController.update)
 userApiRouter.delete('/api/categories/:categoryId', categoryController.remove)
+
 // Note API
 userApiRouter.post('/api/notes', noteController.create)
 userApiRouter.get('/api/notes', noteController.get)

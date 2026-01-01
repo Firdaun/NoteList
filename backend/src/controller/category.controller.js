@@ -1,6 +1,4 @@
-import { prismaClient } from "../application/database.js"
 import { categoryService } from "../service/category.service.js"
-import { categoryValidation } from "../validation/category.validation.js"
 
 const create = async (req, res, next) => {
     try {
@@ -41,7 +39,6 @@ const update = async (req, res, next) => {
 const remove = async (req, res, next) => {
     try {
         const categoryId = req.params.categoryId
-        // Panggil service yang sebenarnya
         await categoryService.remove(req.user, categoryId)
         res.status(200).json({
             data: "OK"
