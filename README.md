@@ -37,27 +37,3 @@ Proyek ini menerapkan arsitektur **Monorepo** (Frontend & Backend terpisah) dan 
 * **Error Handling:** Penanganan error yang rapi, mencegah aplikasi *crash* saat terjadi kesalahan data.
 
 ---
-
-## 🛠️ Teknologi yang Digunakan (Tech Stack)
-
-Aplikasi ini dibangun dengan semangat **"JavaScript Everywhere"**.
-
-### Backend (Server Side)
-* **Runtime:** Node.js
-* **Framework:** Express.js (RESTful API)
-* **Database:** MySQL
-* **ORM:** Prisma (untuk interaksi database yang *type-safe*)
-* **Validasi:** Joi (Validasi request body)
-* **Testing:** Vitest & Supertest
-* **Logging:** Winston
-* **Utilities:** Bcrypt, UUID
-
-### Frontend (Client Side)
-* **Library:** React.js
-* **Build Tool:** Vite (Super cepat)
-* **Styling:** Tailwind CSS & Pure CSS
-* **Routing:** React Router DOM
-* **Icons:** Heroicons / FontAwesome (via CDN)
-* **HTTP Client:** Fetch API (Custom wrapper)
-
----
