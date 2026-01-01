@@ -8,12 +8,23 @@ export const ProtectedRoute = ({ children }) => {
 
     useEffect(() => {
         getUser()
-        .then(() => setIsAuth(true))
-        .catch(() => setIsAuth(false))
-        .finally(() => setIsLoading(false))
+            .then(() => setIsAuth(true))
+            .catch(() => setIsAuth(false))
+            .finally(() => setIsLoading(false))
     }, [])
 
-    if (isLoading) return <div className="flex justify-center items-center h-screen text-gray-500">Loading auth...</div>
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center bg-fuchsia-50 justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>
+                    <span className="text-sm font-medium animate-pulse">
+                        Memeriksa akses...
+                    </span>
+                </div>
+            </div>
+        )
+    }
 
     if (!isAuth) {
         return <Navigate to='/login' replace />

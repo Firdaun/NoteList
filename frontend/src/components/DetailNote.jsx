@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Link, useNavigate, useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { deleteNote, getNoteById } from "../lib/note-api"
 import { alertConfirm, alertError, alertSuccess } from "../lib/alert"
 
@@ -95,10 +95,10 @@ export default function DetailNote() {
                         <div className="border-b-2 border-dashed border-fuchsia-200 pb-6 mb-6">
                             <div className="flex justify-between">
                                 <span className="bg-white text-fuchsia-500 px-3 py-1 rounded-full text-sm font-semibold border border-fuchsia-100 shadow-sm">
-                                    {formatDate(note.createdAt)}
+                                    {note.category ? note.category.name : "Uncategorized"}
                                 </span>
                                 <span className="bg-white text-fuchsia-500 px-3 py-1 rounded-full text-sm font-semibold border border-fuchsia-100 shadow-sm">
-                                    {note.category ? note.category.name : "Uncategorized"}
+                                    {formatDate(note.createdAt)}
                                 </span>
                             </div>
                             <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mt-4 ">
