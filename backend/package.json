@@ -9,8 +9,7 @@
   "scripts": {
     "test": "vitest run",
     "start": "node src/main.js",
-    "postinstall": "prisma generate",
-    "vercel-build": "prisma migrate deploy"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.2.0",
