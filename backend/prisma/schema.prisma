@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -14,42 +8,39 @@ datasource db {
 }
 
 model Users {
-  username String  @id @db.VarChar(100)
-  password String  @db.VarChar(100)
-  name     String  @db.VarChar(100)
-  token    String? @db.VarChar(100)
-
-  notes      Notes[]
+  username   String     @id @db.VarChar(100)
+  password   String     @db.VarChar(100)
+  name       String     @db.VarChar(100)
+  token      String?    @db.VarChar(100)
   categories Category[]
+  notes      Notes[]
 
   @@map("users")
 }
 
 model Category {
-  id   Int    @id @default(autoincrement())
-  name String @db.VarChar(100)
-
-  username String @db.VarChar(100)
-  user     Users  @relation(fields: [username], references: [username], onDelete: Cascade)
-
-  notes Notes[]
+  id       Int     @id @default(autoincrement())
+  name     String  @db.VarChar(100)
+  username String  @db.VarChar(100)
+  user     Users   @relation(fields: [username], references: [username], onDelete: Cascade)
+  notes    Notes[]
 
   @@unique([username, name])
   @@map("categories")
 }
 
 model Notes {
-  id        Int      @id @default(autoincrement())
-  title     String   @db.VarChar(100)
-  content   String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  username String @db.VarChar(100)
-  users    Users  @relation(fields: [username], references: [username], onDelete: Cascade)
-
+  id         Int       @id @default(autoincrement())
+  title      String    @db.VarChar(100)
+  content    String    @db.Text
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  username   String    @db.VarChar(100)
   categoryId Int?
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  users      Users     @relation(fields: [username], references: [username], onDelete: Cascade)
 
+  @@index([categoryId], map: "notes_categoryId_fkey")
+  @@index([username], map: "notes_username_fkey")
   @@map("notes")
 }
