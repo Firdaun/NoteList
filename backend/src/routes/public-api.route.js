@@ -1,5 +1,6 @@
 import express from "express"
 import { userController } from "../controller/user.controller.js"
+import { prismaClient } from "../application/database.js"
 
 const publicRouter = new express.Router()
 
