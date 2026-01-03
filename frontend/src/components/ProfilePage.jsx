@@ -11,6 +11,7 @@ export default function ProfilePage() {
     const [isPasswordLoading, setIsPasswordLoading] = useState(false)
     const [originalName, setOriginalName] = useState("")
     const [isfetch, setIsfetch] = useState(false)
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
     const newPasswordRef = useRef(null)
     const confirmPasswordRef = useRef(null)
     const [passwordForm, setPasswordForm] = useState({
@@ -100,15 +101,16 @@ export default function ProfilePage() {
     const handleLogout = async () => {
         const isConfirmed = await alertConfirm('Apakah kamu yakin ingin keluar')
         if (!isConfirmed) return
-
+        setIsLoggingOut(true)
         try {
             await logoutAPI()
         } catch (error) {
             console.error('Gagal logout', error)
+        } finally {
+            logout()
+            navigate('/login')
         }
 
-        logout()
-        navigate('/login')
     }
     return (
         <div className="pt-16 min-h-[calc(100vh-64px)] bg-gray-50 pb-20 relative overflow-hidden">
@@ -267,6 +269,16 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
+            {isLoggingOut && (
+                <div className="fixed inset-0 z-50 flex items-center backdrop-blur-xs justify-center bg-black/20 transition-opacity">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>
+                        <span className="text-sm font-medium animate-pulse">
+                            Keluar...
+                        </span>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
