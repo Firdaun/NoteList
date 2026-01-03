@@ -177,10 +177,36 @@ export default function CreateNote() {
     }, [id, isEditMode, navigate])
     if (isEditMode && isFetching) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <div className="animate-pulse flex flex-col items-center">
-                    <div className="h-4 w-32 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-4 w-24 bg-gray-200 rounded"></div>
+            <div className="max-w-7xl h-dvh w-11/12 mx-auto flex flex-col pt-16 animate-pulse">
+                <div className="flex items-center gap-4 my-8">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                    <div>
+                        <div className="h-8 w-48 bg-gray-200 rounded-lg mb-2"></div>
+                        <div className="h-4 w-32 bg-gray-100 rounded"></div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col flex-1 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                            <div className="h-11 w-full bg-gray-100 rounded-lg border border-gray-100"></div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                            <div className="h-11 w-full bg-gray-100 rounded-lg border border-gray-100"></div>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col space-y-2">
+                        <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                        <div className="flex-1 w-full bg-gray-100 rounded-lg border border-gray-100"></div>
+                    </div>
+
+                    <div className="flex justify-end pt-4 border-t border-gray-100 pb-8">
+                        <div className="h-10 w-36 bg-gray-200 rounded-lg"></div>
+                    </div>
                 </div>
             </div>
         )
@@ -190,7 +216,7 @@ export default function CreateNote() {
         <div className="max-w-7xl h-dvh w-11/12 mx-auto flex flex-col pt-16">
 
             <div className="flex items-center gap-4 my-8">
-                <button onClick={() => navigate(-1)} className=" text-gray-400 hover:text-fuchsia-500 transition">
+                <button onClick={() => navigate(-1)} className="cursor-pointer text-gray-400 hover:text-fuchsia-500 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                     </svg>
