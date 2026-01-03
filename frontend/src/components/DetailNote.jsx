@@ -8,6 +8,7 @@ export default function DetailNote() {
     const navigate = useNavigate()
     const [note, setNote] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [isDeleting, setIsDeleting] = useState(false)
 
     useEffect(() => {
         getNoteById(id)
@@ -25,11 +26,14 @@ export default function DetailNote() {
     const handleDelete = async () => {
         const isConfirmed = await alertConfirm("Yakin ingin menghapus catatan ini?")
         if (!isConfirmed) return
+        setIsDeleting(true)
         try {
             await deleteNote(id)
+            setIsDeleting(false)
             await alertSuccess("Catatan berhasil dihapus!")
             navigate("/")
         } catch (error) {
+            setIsDeleting(false)
             alertError(error.message)
         }
     }
@@ -128,6 +132,16 @@ export default function DetailNote() {
                 </div>
 
             </div>
+            {isDeleting && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 transition-opacity">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>
+                    <span className="text-sm font-medium animate-pulse">
+                        Menghapus...
+                    </span>
+                </div>
+            </div>
+            )}
         </div>
     )
 }
