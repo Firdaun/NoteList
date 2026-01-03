@@ -14,12 +14,14 @@ export default function DetailNote() {
         getNoteById(id)
             .then(data => {
                 setNote(data)
-                setLoading(false)
             })
             .catch(err => {
                 console.error(err)
-                alertError("Catatan tidak ditemukan atau terjadi kesalahan.")
-                navigate("/")
+                alertError("Sesi habis silahkan login lagi.")
+                navigate("/login")
+            })
+            .finally(() => {
+                setLoading(false)
             })
     }, [id, navigate])
 
@@ -46,9 +48,15 @@ export default function DetailNote() {
 
     if (loading) {
         return (
-            <div className="min-h-[calc(100vh-64px)] bg-white py-10">
+            <div className="pt-27 min-h-[calc(100vh-64px)] bg-white py-10">
                 <div className="max-w-3xl w-[90%] mx-auto animate-pulse">
-                    <div className="h-6 w-32 bg-gray-200 rounded mb-6"></div>
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="w-6 h-6 bg-gray-200 rounded-md"></div>
+                        <div className="space-y-2">
+                            <div className="h-8 w-48 bg-gray-200 rounded-lg"></div>
+                            <div className="h-4 w-64 bg-gray-200 rounded-md"></div>
+                        </div>
+                    </div>
                     <div className="border-2 border-gray-100 rounded-2xl p-8 shadow-sm h- relative overflow-hidden bg-gray-50">
                         <div className="border-b-2 border-dashed border-gray-200 pb-6 mb-6">
                             <div className="flex justify-between items-center mb-4">
@@ -134,13 +142,13 @@ export default function DetailNote() {
             </div>
             {isDeleting && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 transition-opacity">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>
-                    <span className="text-sm font-medium animate-pulse">
-                        Menghapus...
-                    </span>
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>
+                        <span className="text-sm font-medium animate-pulse">
+                            Menghapus...
+                        </span>
+                    </div>
                 </div>
-            </div>
             )}
         </div>
     )

@@ -1,7 +1,7 @@
-import { Outlet } from "react-router";
-import Navbar from "./Navbar";
-import { getUser } from "../lib/user-api";
-import { useEffect, useState } from "react";
+import { Outlet } from "react-router"
+import Navbar from "./Navbar"
+import { getUser } from "../lib/user-api"
+import { useEffect, useState } from "react"
 
 export default function Layout() {
     const [user, setUser] = useState(null)
@@ -17,8 +17,8 @@ export default function Layout() {
     }
 
     useEffect(() => {
-        fetchUser();
-    }, []);
+        fetchUser()
+    }, [])
     return (
         <>
             <Navbar user={user} />
