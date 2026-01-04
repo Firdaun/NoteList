@@ -17,7 +17,7 @@ export const ProtectedRoute = ({ children }) => {
             })
             .catch(async () => {
                 setIsAuth(false)
-                await alertError("Sesi kamu telah habis, silakan login lagi ya!")
+                // await alertError("Sesi kamu telah habis, silakan login lagi ya!")
                 navigate('/login', { replace: true })
                 setIsLoading(false)
             })
