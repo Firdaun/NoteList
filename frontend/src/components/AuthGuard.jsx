@@ -1,17 +1,27 @@
 import { useEffect, useState } from "react"
-import { Navigate, Outlet } from "react-router"
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router"
 import { getUser } from "../lib/user-api"
+import { alertError } from "../lib/alert"
 
 export const ProtectedRoute = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true)
     const [isAuth, setIsAuth] = useState(false)
+    const location = useLocation()
+    const navigate = useNavigate()
 
     useEffect(() => {
         getUser()
-            .then(() => setIsAuth(true))
-            .catch(() => setIsAuth(false))
-            .finally(() => setIsLoading(false))
-    }, [])
+            .then(() => {
+                setIsAuth(true)
+                setIsLoading(false)
+            })
+            .catch(async () => {
+                setIsAuth(false)
+                await alertError("Sesi kamu telah habis, silakan login lagi ya!")
+                navigate('/login', { replace: true })
+                setIsLoading(false)
+            })
+    }, [location, navigate])
 
     if (isLoading) {
         return (
@@ -26,11 +36,7 @@ export const ProtectedRoute = ({ children }) => {
         )
     }
 
-    if (!isAuth) {
-        return <Navigate to='/login' replace />
-    }
-
-    return children || <Outlet />
+    return isAuth ? (children || <Outlet />) : null
 }
 
 export const GuestRoute = ({ children }) => {

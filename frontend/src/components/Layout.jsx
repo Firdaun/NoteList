@@ -23,7 +23,7 @@ export default function Layout() {
         <>
             <Navbar user={user} />
             <main>
-                <Outlet context={{refreshUser: fetchUser}} />
+                <Outlet context={{user, refreshUser: fetchUser}} />
             </main>
         </>
     )

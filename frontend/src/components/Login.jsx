@@ -49,65 +49,61 @@ export default function Login() {
 
     return (
         <>
-            <div className="min-h-screen flex items-center justify-center bg-fuchsia-50">
-                <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-200">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-fuchsia-400">Selamat datang</h1>
-                        <p className="text-gray-500 mt-2">Masuk untuk bisa akses catetanmu.</p>
-                    </div>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                Username
-                            </label>
-                            <input
-                                ref={usernameRef}
-                                onKeyDown={(e) => handleKeyDown(e, null, passwordRef)}
-                                value={formData.username}
-                                onChange={handleChange}
-                                type="text"
-                                name="username"
-                                placeholder="Masukkan username"
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                Password
-                            </label>
-                            <input
-                                ref={passwordRef}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        handleSubmit(e);
-                                    } else {
-                                        handleKeyDown(e, usernameRef, null);
-                                    }
-                                }}
-                                value={formData.password}
-                                onChange={handleChange}
-                                type="password"
-                                name="password"
-                                placeholder="Masukkan password"
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full bg-fuchsia-400 hover:bg-fuchsia-500 text-white font-semibold py-3 rounded-lg transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                        >
-                            {isLoading ? "Loading..." : "Masuk"}
-                        </button>
-                    </form>
-                    <p className="mt-8 text-center text-sm text-gray-600">
-                        Tidak punya akun?{' '}
-                        <Link to="/register" className="font-semibold text-fuchsia-400 hover:text-fuchsia-500 hover:underline transition duration-200">
-                            Register
-                        </Link>
-                    </p>
-                </div>
+            <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-fuchsia-400">Selamat datang</h1>
+                <p className="text-gray-500 mt-2">Masuk untuk bisa akses catetanmu.</p>
             </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Username
+                    </label>
+                    <input
+                        ref={usernameRef}
+                        onKeyDown={(e) => handleKeyDown(e, null, passwordRef)}
+                        value={formData.username}
+                        onChange={handleChange}
+                        type="text"
+                        name="username"
+                        placeholder="Masukkan username"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Password
+                    </label>
+                    <input
+                        ref={passwordRef}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleSubmit(e);
+                            } else {
+                                handleKeyDown(e, usernameRef, null);
+                            }
+                        }}
+                        value={formData.password}
+                        onChange={handleChange}
+                        type="password"
+                        name="password"
+                        placeholder="Masukkan password"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
+                    />
+                </div>
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-fuchsia-400 hover:bg-fuchsia-500 text-white font-semibold py-3 rounded-lg transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                >
+                    {isLoading ? "Loading..." : "Masuk"}
+                </button>
+            </form>
+            <p className="mt-8 text-center text-sm text-gray-600">
+                Tidak punya akun?{' '}
+                <Link to="/register" className="font-semibold text-fuchsia-400 hover:text-fuchsia-500 hover:underline transition duration-200">
+                    Register
+                </Link>
+            </p>
         </>
     )
 }

@@ -11,6 +11,7 @@ import Register from './components/Register'
 import { GuestRoute, ProtectedRoute } from './components/AuthGuard'
 import CreateNote from './components/CreateNote'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import AuthLayout from './components/AuthLayout'
 const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')).render(
@@ -25,8 +26,10 @@ createRoot(document.getElementById('root')).render(
             <Route path="/createnote" element={<CreateNote />} />
             <Route path="/edit/:id" element={<CreateNote />} />
           </Route>
-          <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
-          <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+          <Route element={<GuestRoute><AuthLayout /></GuestRoute>}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

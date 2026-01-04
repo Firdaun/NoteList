@@ -12,17 +12,9 @@ export default function DetailNote() {
 
     useEffect(() => {
         getNoteById(id)
-            .then(data => {
-                setNote(data)
-            })
-            .catch(err => {
-                console.error(err)
-                alertError("Sesi habis silahkan login lagi.")
-                navigate("/login")
-            })
-            .finally(() => {
-                setLoading(false)
-            })
+            .then(data => setNote(data))
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false))
     }, [id, navigate])
 
     const handleDelete = async () => {
@@ -42,7 +34,7 @@ export default function DetailNote() {
 
     const formatDate = (dateString) => {
         if (!dateString) return "-"
-        const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit'}
         return new Date(dateString).toLocaleDateString('id-ID', options)
     }
 
@@ -103,7 +95,7 @@ export default function DetailNote() {
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-fuchsia-200 rounded-full blur-2xl opacity-50"></div>
                     <div className="absolute top-20 -left-10 w-24 h-24 bg-pink-200 rounded-full blur-2xl opacity-50"></div>
 
-                    <div className="relative z-10">
+                    <div className="relative">
                         <div className="border-b-2 border-dashed border-fuchsia-200 pb-6 mb-6">
                             <div className="flex justify-between">
                                 <span className="bg-white text-fuchsia-500 px-3 py-1 rounded-full text-sm font-semibold border border-fuchsia-100 shadow-sm">
@@ -118,7 +110,7 @@ export default function DetailNote() {
                             </h1>
                         </div>
                         <div className="prose prose-lg prose-fuchsia max-w-none text-gray-600 leading-loose">
-                            <p>{note.content}</p>
+                            <p className="whitespace-pre-wrap">{note.content}</p>
                         </div>
                     </div>
                 </div>

@@ -1,16 +1,15 @@
 import { Link, useNavigate, useOutletContext } from "react-router";
 import { alertConfirm, alertError, alertInfo, alertSuccess } from "../lib/alert";
-import { getUser, logout, logoutAPI, updateUser } from "../lib/user-api";
+import { logout, logoutAPI, updateUser } from "../lib/user-api";
 import { useEffect, useRef, useState } from "react";
 
 export default function ProfilePage() {
     const navigate = useNavigate()
-    const { refreshUser } = useOutletContext()
-    const [name, setName] = useState("")
+    const { user, refreshUser } = useOutletContext()
+    const [name, setName] = useState(user?.name || "")
     const [isProfileLoading, setIsProfileLoading] = useState(false)
     const [isPasswordLoading, setIsPasswordLoading] = useState(false)
-    const [originalName, setOriginalName] = useState("")
-    const [isfetch, setIsfetch] = useState(false)
+    const [originalName, setOriginalName] = useState(user?.name || "")
     const [isLoggingOut, setIsLoggingOut] = useState(false)
     const newPasswordRef = useRef(null)
     const confirmPasswordRef = useRef(null)
@@ -23,21 +22,11 @@ export default function ProfilePage() {
     }
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            setIsfetch(true)
-            try {
-                const result = await getUser()
-                setName(result.data.name)
-                setOriginalName(result.data.name)
-            } catch (error) {
-                alertError('Sesi habis silahkan login lagi')
-                navigate('/login')
-            } finally {
-                setIsfetch(false)
-            }
+        if (user) {
+            setName(user.name)
+            setOriginalName(user.name)
         }
-        fetchUserData()
-    }, [navigate])
+    }, [user])
 
     const handleKeyDown = (e, prevRef, nextRef) => {
         if (e.key === "Enter" || e.key === "ArrowDown") {
@@ -113,7 +102,7 @@ export default function ProfilePage() {
 
     }
     return (
-        <div className="pt-16 min-h-[calc(100vh-64px)] bg-gray-50 pb-20 relative overflow-hidden">
+        <div className="pt-16 min-h-screen bg-gray-50 pb-20 relative overflow-hidden">
 
             <div className="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none">
                 <div className="absolute top-20 right-[-10%] w-96 h-96 bg-fuchsia-200 rounded-full blur-3xl opacity-20"></div>
@@ -143,9 +132,9 @@ export default function ProfilePage() {
                                 </div>
                                 <div className="flex flex-col">
                                     <h2 className="text-xl font-bold text-gray-800">Edit Profil</h2>
-                                    {isfetch && (
+                                    {/* {isfetch && (
                                         <p className="animate-pulse text-gray-500">mengambil...</p>
-                                    )}
+                                    )} */}
                                 </div>
                             </div>
 

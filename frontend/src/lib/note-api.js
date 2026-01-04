@@ -25,7 +25,7 @@ export const createCategory = async (name) => {
     })
     const result = await response.json()
     if (!response.ok) {
-        throw new Error(result.errors || 'Gagal buat category')
+        throw new Error(result.errors || 'Gagal mengambil category')
     }
     return result.data
 }
