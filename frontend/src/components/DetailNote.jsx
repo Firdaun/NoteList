@@ -109,7 +109,7 @@ export default function DetailNote() {
                                 {note.title}
                             </h1>
                         </div>
-                        <div className="prose prose-lg prose-fuchsia max-w-none text-gray-600 leading-loose">
+                        <div className="text-gray-600 break-all leading-loose">
                             <p className="whitespace-pre-wrap">{note.content}</p>
                         </div>
                     </div>

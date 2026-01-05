@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { getCategories, getNotes } from "./lib/note-api";
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export default function App() {
     const [isOpen, setIsOpen] = useState(false)
@@ -11,10 +11,12 @@ export default function App() {
     const page = parseInt(searchParams.get("page") || "1")
     const [search, setSearch] = useState("")
     const [debouncedSearch, setDebouncedSearch] = useState("")
-    const [selectedCategory, setSelectedCategory] = useState(null)
+    const categoryParam = searchParams.get("category")
+    const selectedCategory = categories.find(cat => cat.name === categoryParam) || null
     const [isSortOpen, setIsSortOpen] = useState(false)
     const sortMenuRef = useRef(null)
-    const [sortBy, setSortBy] = useState("latest")
+    const sortBy = searchParams.get("sort") || "latest"
+    const queryClient = useQueryClient()
 
     useEffect(() => {
         getCategories()
@@ -40,17 +42,34 @@ export default function App() {
         isLoading,
         isPlaceholderData
     } = useQuery({
-        queryKey: ['notes', page, debouncedSearch, selectedCategory?.name, sortBy],
+        queryKey: ['notes', page, debouncedSearch, categoryParam, sortBy],
         queryFn: () => getNotes({
             page: page,
             size: 12,
             search: debouncedSearch,
-            category: selectedCategory ? selectedCategory.name : '',
+            category: categoryParam || '',
             sort: sortBy
         }),
         placeholderData: keepPreviousData,
         staleTime: 5000
     })
+
+    useEffect(() => {
+        if (notesData?.paging?.total_page > page) {
+            const nextPage = page + 1
+            queryClient.prefetchQuery({
+                queryKey: ['notes', nextPage, debouncedSearch, categoryParam, sortBy],
+                queryFn: () => getNotes({
+                    page: nextPage,
+                    size: 12,
+                    search: debouncedSearch,
+                    category: categoryParam || '',
+                    sort: sortBy
+                }),
+                staleTime: 5000
+            })
+        }
+    }, [notesData, page, queryClient, debouncedSearch, categoryParam, sortBy])
 
     const notes = notesData?.data || []
     const totalPages = notesData?.paging?.total_page || 0
@@ -179,8 +198,8 @@ export default function App() {
                                         {sortOptions.map((option) => (
                                             <li key={option.value}>
                                                 <div onClick={() => {
-                                                    setSortBy(option.value)
                                                     setSearchParams(prev => {
+                                                        prev.set("sort", option.value)
                                                         prev.set("page", 1)
                                                         return prev
                                                     })
@@ -211,7 +230,10 @@ export default function App() {
                                 {search && (
                                     <div onClick={() => {
                                         setSearch("")
-                                        setSelectedCategory(null)
+                                        setSearchParams(prev => {
+                                            prev.delete("category")
+                                            return prev
+                                        })
                                     }} className="absolute right-3 top-3.25 text-gray-400 group-focus-within:text-fuchsia-500 hover:cursor-pointer">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentcolor" viewBox="0 0 256 256"><path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
                                     </div>
@@ -233,29 +255,31 @@ export default function App() {
                                         <li>
                                             <div
                                                 onClick={() => {
-                                                    setSelectedCategory(null)
                                                     setSearchParams(prev => {
+                                                        prev.delete("category")
                                                         prev.set("page", 1)
                                                         return prev
                                                     })
                                                 }}
                                                 className={`block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400 cursor-pointer border-b border-gray-50 font-semibold
-                                            ${selectedCategory === null ? 'text-fuchsia-500' : 'text-gray-600'}`}>
+                                                ${selectedCategory === null ? 'text-fuchsia-500' : 'text-gray-600'}`}>
                                                 Semua Kategori
                                             </div>
                                         </li>
 
                                         {categories.map((cat) => (
                                             <li key={cat.id}>
-                                                <Link
-                                                    to={cat.to}
+                                                <div
                                                     className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400"
                                                     onClick={() => {
-                                                        setSelectedCategory(cat)
-                                                        setIsOpen(false)
+                                                        setSearchParams(prev => {
+                                                            prev.set("category", cat.name)
+                                                            prev.set("page", 1)
+                                                            return prev
+                                                        })
                                                     }}>
                                                     {cat.name}
-                                                </Link>
+                                                </div>
                                             </li>
                                         ))}
                                     </ul>
@@ -296,27 +320,30 @@ export default function App() {
                         <Link
                             key={note.id}
                             to={`/${note.id}`}
-                            className="relative flex flex-col h-60 bg-white rounded-2xl p-6 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                            className="relative justify-between flex flex-col h-60 bg-white rounded-2xl p-6 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-fuchsia-400 to-pink-400 opacity-100 transition-opacity"></div>
+                            <div>
+                                <div className="flex justify-between items-start ">
+                                    <span className="text-xs font-bold px-2 py-1 rounded-lg bg-fuchsia-100 text-fuchsia-600 transition-colors uppercase tracking-wider">
+                                        {note.category ? note.category.name : 'Uncategorized'}
+                                    </span>
+                                    <span className="text-xs text-gray-400 font-medium">
+                                        {formatDate(note.updatedAt)}
+                                    </span>
+                                </div>
 
-                            <div className="flex justify-between items-start mb-3">
-                                <span className="text-xs font-bold px-2 py-1 rounded-lg bg-fuchsia-100 text-fuchsia-600 transition-colors uppercase tracking-wider">
-                                    {note.category ? note.category.name : 'Uncategorized'}
-                                </span>
-                                <span className="text-xs text-gray-400 font-medium">
-                                    {formatDate(note.updatedAt)}
-                                </span>
+                                <h2 className="text-xl my-2 font-bold line-clamp-1 text-fuchsia-600 transition-colors">
+                                    {note.title}
+                                </h2>
+
+                                <div className="overflow-hidden h-25.5">
+                                    <p className="text-gray-500 text-sm break-all leading-relaxed">
+                                        {note.content ? note.content.substring(0, 188) + (note.content.length > 188 ? "..." : "") : ""}
+                                    </p>
+                                </div>
                             </div>
 
-                            <h2 className="text-xl font-bold mb-2 line-clamp-1 text-fuchsia-600 transition-colors">
-                                {note.title}
-                            </h2>
-
-                            <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 mb-auto">
-                                {note.content}
-                            </p>
-
-                            <div className="mt-4 flex items-center text-fuchsia-400 font-semibold text-sm opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all">
+                            <div className="flex items-center text-fuchsia-400 font-semibold text-sm">
                                 Baca selengkapnya
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 ml-1">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
