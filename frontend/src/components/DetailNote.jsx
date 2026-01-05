@@ -102,7 +102,7 @@ export default function DetailNote() {
                                     {note.category ? note.category.name : "Uncategorized"}
                                 </span>
                                 <span className="bg-white text-fuchsia-500 px-3 py-1 rounded-full text-sm font-semibold border border-fuchsia-100 shadow-sm">
-                                    {formatDate(note.createdAt)}
+                                    {formatDate(note.updatedAt)}
                                 </span>
                             </div>
                             <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mt-4 ">

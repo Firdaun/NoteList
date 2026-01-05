@@ -10,7 +10,8 @@ const getNoteValidation = Joi.object({
     page: Joi.number().min(1).positive().default(1),
     size: Joi.number().min(1).positive().max(100).default(10),
     search: Joi.string().optional(),
-    category: Joi.string().optional()
+    category: Joi.string().optional(),
+    sort: Joi.string().valid('latest', 'oldest', 'a-z', 'z-a').optional().default('latest')
 })
 
 const getNoteIdValidation = Joi.number().positive().required()

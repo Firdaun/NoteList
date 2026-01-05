@@ -59,6 +59,23 @@ const get = async (user, request) => {
         })
     }
 
+    let orderBy = {}
+    switch (data.sort) {
+        case 'oldest':
+            orderBy = { updatedAt: 'asc' }
+            break
+        case 'a-z':
+            orderBy = { title: 'asc' }
+            break
+        case 'z-a':
+            orderBy = { title: 'desc' }
+            break
+        case 'latest':
+        default:
+            orderBy = { updatedAt: 'desc' }
+            break
+    }
+
     const notes = await prismaClient.notes.findMany({
         where: {
             AND: filters
@@ -67,7 +84,8 @@ const get = async (user, request) => {
         skip: skip,
         include: {
             category: true
-        }
+        },
+        orderBy: orderBy
     })
 
     const totalItems = await prismaClient.notes.count({

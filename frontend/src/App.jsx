@@ -12,6 +12,9 @@ export default function App() {
     const [search, setSearch] = useState("")
     const [debouncedSearch, setDebouncedSearch] = useState("")
     const [selectedCategory, setSelectedCategory] = useState(null)
+    const [isSortOpen, setIsSortOpen] = useState(false)
+    const sortMenuRef = useRef(null)
+    const [sortBy, setSortBy] = useState("latest")
 
     useEffect(() => {
         getCategories()
@@ -37,12 +40,13 @@ export default function App() {
         isLoading,
         isPlaceholderData
     } = useQuery({
-        queryKey: ['notes', page, debouncedSearch, selectedCategory?.name],
+        queryKey: ['notes', page, debouncedSearch, selectedCategory?.name, sortBy],
         queryFn: () => getNotes({
             page: page,
             size: 11,
             search: debouncedSearch,
-            category: selectedCategory ? selectedCategory.name : ''
+            category: selectedCategory ? selectedCategory.name : '',
+            sort: sortBy
         }),
         placeholderData: keepPreviousData,
         staleTime: 5000
@@ -75,14 +79,55 @@ export default function App() {
     }
 
     const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' }
+        const now = new Date()
+        const date = new Date(dateString)
+        const diffInSeconds = Math.floor((now - date) / 1000)
+
+        const minute = 60
+        const hour = 60 * minute
+        const day = 24 * hour
+        const month = 30 * day
+
+        if (diffInSeconds < minute) {
+            return 'Baru saja'
+        }
+        if (diffInSeconds < hour) {
+            return `${Math.floor(diffInSeconds / minute)} menit yang lalu`
+        }
+        if (diffInSeconds < day) {
+            return `${Math.floor(diffInSeconds / hour)} jam yang lalu`
+        }
+        if (diffInSeconds < month) {
+            return `${Math.floor(diffInSeconds / day)} hari yang lalu`
+        }
+
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
         return new Date(dateString).toLocaleDateString('id-ID', options)
     }
+
+    const getSortLabel = () => {
+        switch (sortBy) {
+            case 'oldest': return 'Terlama'
+            case 'a-z': return 'A-Z'
+            case 'z-a': return 'Z-A'
+            default: return 'Terbaru'
+        }
+    }
+
+    const sortOptions = [
+        { value: 'latest', label: 'Terbaru' },
+        { value: 'oldest', label: 'Terlama' },
+        { value: 'a-z', label: 'A-Z' },
+        { value: 'z-a', label: 'Z-A' },
+    ]
 
     useEffect(() => {
         function handleClickOutside(e) {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
                 setIsOpen(false)
+            }
+            if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
+                setIsSortOpen(false)
             }
         }
         document.addEventListener('mousedown', handleClickOutside)
@@ -102,94 +147,126 @@ export default function App() {
 
             <section className="max-w-7xl w-[90%] mx-auto pt-10">
 
-                <div className="flex flex-col md:flex-row justify-between md:items-end mb-10 gap-4">
+                <div className="flex flex-col justify-between md:items-start mb-10 gap-4">
                     <div>
                         <h1 className="text-4xl font-bold text-gray-800 mb-2">
                             Catatan Kamu <span className="text-2xl">✨</span>
                         </h1>
                         {isPlaceholderData && <p className="text-xs text-fuchsia-400 mt-1 animate-pulse">Memuat data baru...</p>}
                     </div>
-                    <div className="flex">
-                        <div className="relative w-full lg:w-96 group">
-                            <div className="absolute top-4 left-0 pl-4 flex items-center pointer-events-none">
-                                <svg className="h-5 w-5 text-gray-400 group-focus-within:text-fuchsia-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                            <input
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                type="text"
-                                className="block w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-fuchsia-300 transition-all shadow-sm"
-                                placeholder="Cari catatan..."
-                            />
-                            {search && (
-                                <div onClick={() => {
-                                    setSearch("")
-                                    setSelectedCategory(null)
-                                }} className="absolute right-3 top-3.25 text-gray-400 group-focus-within:text-fuchsia-500 hover:cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentcolor" viewBox="0 0 256 256"><path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+                    <div className="flex flex-col-reverse md:flex-row w-full justify-between gap-5 md:gap-10">
+                        <div className="flex md:w-full lg:w-110 xl:w-150 min-w-70 justify-between">
+                            <Link to='/createnote' className="rounded-xl group w-full flex gap-5 rounded-3xl border-2 border-dashed border-fuchsia-200 bg-fuchsia-50/50 hover:bg-fuchsia-50 hover:border-fuchsia-400 transition cursor-pointer">
+                                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm text-fuchsia-400 group-hover:text-fuchsia-600 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
                                 </div>
-                            )}
-                        </div>
-                        <div ref={menuRef} onClick={() => setIsOpen(!isOpen)} className="text-gray-500 select-none cursor-pointer relative">
-                            <div className="p-3 h-full rounded-xl flex items-center justify-center bg-white border-gray-100 border-2 shadow-sm">
-                                <span>{selectedCategory ? selectedCategory.name : "Kategori"}</span>
-                                <svg
-                                    className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                </svg>
+                                <span className="mt-3 font-semibold text-fuchsia-400 group-hover:text-fuchsia-600">Buat Baru</span>
+                            </Link>
+
+                            <div ref={sortMenuRef} onClick={() => setIsSortOpen(!isSortOpen)} className="relative cursor-pointer select-none">
+                                <div className="p-3 hover:cursor-pointer w-26 xl:w-35 text-gray-500 h-full rounded-xl flex items-center justify-center bg-white border-gray-100 border-2 shadow-sm">
+                                    <h1>{getSortLabel()}</h1>
+                                    <svg
+                                        className={`w-4 h-4 transition-transform ${isSortOpen ? 'rotate-180' : ''}`}
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <div className={`absolute top-full right-2 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 transition-all duration-200 ease-out origin-top-right
+                                ${isSortOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
+                                    <ul className="py-1 max-h-60 overflow-y-auto">
+                                        {sortOptions.map((option) => (
+                                            <li key={option.value}>
+                                                <div onClick={() => {
+                                                    setSortBy(option.value)
+                                                    setSearchParams(prev => {
+                                                        prev.set("page", 1)
+                                                        return prev
+                                                    })
+                                                }}
+                                                    className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400">
+                                                    {option.label}
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
-                            <div className={`absolute top-full right-2 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 transition-all duration-200 ease-out origin-top-right
+                        </div>
+                        <div className="flex justify-end md:w-full lg:w-110 xl:w-150">
+                            <div className="relative w-full group">
+                                <div className="absolute top-4 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg className="h-5 w-5 text-gray-400 group-focus-within:text-fuchsia-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    type="text"
+                                    className="block w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-fuchsia-300 transition-all shadow-sm"
+                                    placeholder="Cari catatan..."
+                                />
+                                {search && (
+                                    <div onClick={() => {
+                                        setSearch("")
+                                        setSelectedCategory(null)
+                                    }} className="absolute right-3 top-3.25 text-gray-400 group-focus-within:text-fuchsia-500 hover:cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentcolor" viewBox="0 0 256 256"><path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+                                    </div>
+                                )}
+                            </div>
+                            <div ref={menuRef} onClick={() => setIsOpen(!isOpen)} className="text-gray-500 select-none cursor-pointer relative">
+                                <div className="p-3 h-full xl:w-35 rounded-xl flex items-center justify-center bg-white border-gray-100 border-2 shadow-sm">
+                                    <span>{selectedCategory ? selectedCategory.name : "Kategori"}</span>
+                                    <svg
+                                        className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <div className={`absolute top-full right-2 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 transition-all duration-200 ease-out origin-top-right
                                 ${isOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
-                                <ul className="py-1 max-h-60 overflow-y-auto">
+                                    <ul className="py-1 max-h-60 overflow-y-auto">
 
-                                    <li>
-                                        <div
-                                            onClick={() => {
-                                                setSelectedCategory(null)
-                                                setIsOpen(false)
-                                                setSearchParams(prev => {
-                                                    prev.set("page", 1)
-                                                    return prev
-                                                })
-                                            }}
-                                            className={`block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400 cursor-pointer border-b border-gray-50 font-semibold
-                                            ${selectedCategory === null ? 'text-fuchsia-500' : 'text-gray-600'}`}>
-                                            Semua Kategori
-                                        </div>
-                                    </li>
-
-                                    {categories.map((cat) => (
-                                        <li key={cat.id}>
-                                            <Link
-                                                to={cat.to}
-                                                className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400"
+                                        <li>
+                                            <div
                                                 onClick={() => {
-                                                    setSelectedCategory(cat)
-                                                    setIsOpen(false)
-                                                }}>
-                                                {cat.name}
-                                            </Link>
+                                                    setSelectedCategory(null)
+                                                    setSearchParams(prev => {
+                                                        prev.set("page", 1)
+                                                        return prev
+                                                    })
+                                                }}
+                                                className={`block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400 cursor-pointer border-b border-gray-50 font-semibold
+                                            ${selectedCategory === null ? 'text-fuchsia-500' : 'text-gray-600'}`}>
+                                                Semua Kategori
+                                            </div>
                                         </li>
-                                    ))}
-                                </ul>
+
+                                        {categories.map((cat) => (
+                                            <li key={cat.id}>
+                                                <Link
+                                                    to={cat.to}
+                                                    className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400"
+                                                    onClick={() => {
+                                                        setSelectedCategory(cat)
+                                                        setIsOpen(false)
+                                                    }}>
+                                                    {cat.name}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <Link to='/createnote' className="group flex flex-col items-center justify-center h-60 rounded-3xl border-2 border-dashed border-fuchsia-200 bg-fuchsia-50/50 hover:bg-fuchsia-50 hover:border-fuchsia-400 transition cursor-pointer">
-                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-fuchsia-400 group-hover:scale-110 group-hover:text-fuchsia-600 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                        </div>
-                        <span className="mt-3 font-semibold text-fuchsia-400 group-hover:text-fuchsia-600">Buat Baru</span>
-                    </Link>
-
                     {isLoading && (
                         [...Array(11)].map((_, i) => (
                             <div key={i} className="h-60 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm animate-pulse">
@@ -211,7 +288,7 @@ export default function App() {
                     )}
 
                     {!isLoading && notes.length === 0 && (
-                        <div className="col-span-1 sm:col-span-2 lg:col-span-2 flex flex-col items-center justify-center h-60 text-gray-400 border-2 border-dashed border-gray-200 rounded-3xl">
+                        <div className="col-span-3 flex flex-col items-center justify-center h-60 text-gray-400 border-2 border-dashed border-gray-200 rounded-3xl">
                             <p>Belum ada catatan nih...</p>
                         </div>
                     )}
@@ -228,7 +305,7 @@ export default function App() {
                                     {note.category ? note.category.name : 'Uncategorized'}
                                 </span>
                                 <span className="text-xs text-gray-400 font-medium">
-                                    {formatDate(note.createdAt)}
+                                    {formatDate(note.updatedAt)}
                                 </span>
                             </div>
 
@@ -252,7 +329,7 @@ export default function App() {
 
                 {totalPages > 1 && (
                     <div className="fixed bottom-6 left-0 w-full flex justify-center z-50 pointer-events-none">
-                        <nav className="pointer-events-auto flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 p-2 transition-all transform hover:-translate-y-1">
+                        <nav className="pointer-events-auto flex items-center bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 p-2 transition-all transform hover:-translate-y-1">
 
                             <button
                                 onClick={() => handlePageChange(page - 1)}
