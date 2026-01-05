@@ -132,9 +132,6 @@ export default function ProfilePage() {
                                 </div>
                                 <div className="flex flex-col">
                                     <h2 className="text-xl font-bold text-gray-800">Edit Profil</h2>
-                                    {/* {isfetch && (
-                                        <p className="animate-pulse text-gray-500">mengambil...</p>
-                                    )} */}
                                 </div>
                             </div>
 

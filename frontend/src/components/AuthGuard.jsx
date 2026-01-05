@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router"
 import { getUser } from "../lib/user-api"
-import { alertError } from "../lib/alert"
 
 export const ProtectedRoute = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true)
@@ -17,7 +16,6 @@ export const ProtectedRoute = ({ children }) => {
             })
             .catch(async () => {
                 setIsAuth(false)
-                // await alertError("Sesi kamu telah habis, silakan login lagi ya!")
                 navigate('/login', { replace: true })
                 setIsLoading(false)
             })

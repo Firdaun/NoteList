@@ -43,7 +43,7 @@ export default function App() {
         queryKey: ['notes', page, debouncedSearch, selectedCategory?.name, sortBy],
         queryFn: () => getNotes({
             page: page,
-            size: 11,
+            size: 12,
             search: debouncedSearch,
             category: selectedCategory ? selectedCategory.name : '',
             sort: sortBy
@@ -146,7 +146,6 @@ export default function App() {
             </div>
 
             <section className="max-w-7xl w-[90%] mx-auto pt-10">
-
                 <div className="flex flex-col justify-between md:items-start mb-10 gap-4">
                     <div>
                         <h1 className="text-4xl font-bold text-gray-800 mb-2">
