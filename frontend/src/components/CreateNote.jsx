@@ -61,7 +61,6 @@ export default function CreateNote() {
         if (!editCategoryName.trim()) return alertError("Nama kategori tidak boleh kosong")
         setIsSaving(true)
         try {
-            await sleep(2000)
             await updateCategory(categoryId, editCategoryName)
             setCategories(prev => prev.map(cat =>
                 cat.id === categoryId ? { ...cat, name: editCategoryName } : cat
@@ -77,7 +76,6 @@ export default function CreateNote() {
         }
     }
 
-    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const handleDeleteCategory = async (e, categoryId) => {
         e.stopPropagation()
@@ -85,7 +83,6 @@ export default function CreateNote() {
         if (!isConfirmed) return
         setIsDeleting(true)
         try {
-            await sleep(2000)
             await deleteCategory(categoryId)
             setCategories(prev => prev.filter(cat => cat.id !== categoryId))
             if (selectedCategory?.id === categoryId) {
@@ -365,10 +362,6 @@ export default function CreateNote() {
                             ${isLoading ? 'bg-fuchsia-300 cursor-not-allowed' : 'bg-fuchsia-400 hover:bg-fuchsia-500 focus:ring-4 cursor-pointer'}`}>
                             {isLoading ? (
                                 <>
-                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
                                     <span>Menyimpan...</span>
                                 </>
                             ) : (
@@ -378,7 +371,7 @@ export default function CreateNote() {
                     </div>
                 </div>
             </form>
-            {(isDeleting || isSaving) && (
+            {(isDeleting || isSaving || isLoading) && (
                 <div className="fixed inset-0 z-50 backdrop-blur-xs flex items-center justify-center bg-black/20 transition-opacity">
                     <div className="flex flex-col items-center gap-4">
                         <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>
