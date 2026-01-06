@@ -338,7 +338,7 @@ export default function App() {
 
                                 <div className="overflow-hidden h-25.5">
                                     <p className="text-gray-500 text-sm break-all leading-relaxed">
-                                        {note.content ? note.content.substring(0, 188) + (note.content.length > 188 ? "..." : "") : ""}
+                                        {note.content ? note.content.substring(0, 150) + (note.content.length > 150 ? "..." : "") : ""}
                                     </p>
                                 </div>
                             </div>

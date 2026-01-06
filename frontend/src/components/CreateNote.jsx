@@ -16,6 +16,7 @@ export default function CreateNote() {
     const [editingCategoryId, setEditingCategoryId] = useState(null)
     const [editCategoryName, setEditCategoryName] = useState('')
     const [isDeleting, setIsDeleting] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
     const { id } = useParams()
     const menuRef = useRef(null)
     const categoryInputRef = useRef(null)
@@ -58,6 +59,7 @@ export default function CreateNote() {
     const saveEditing = async (e, categoryId) => {
         e.stopPropagation()
         if (!editCategoryName.trim()) return alertError("Nama kategori tidak boleh kosong")
+        setIsSaving(true)
         try {
             await updateCategory(categoryId, editCategoryName)
             setCategories(prev => prev.map(cat =>
@@ -66,6 +68,7 @@ export default function CreateNote() {
             if (selectedCategory?.id === categoryId) {
                 setSelectedCategory(prev => ({ ...prev, name: editCategoryName }))
             }
+            setIsSaving(false)
             setEditingCategoryId(null)
             alertSuccess("Kategori berhasil diubah!")
         } catch (error) {
@@ -377,6 +380,16 @@ export default function CreateNote() {
                     <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>
                     <span className="text-sm font-medium animate-pulse">
                         Menghapus...
+                    </span>
+                </div>
+            </div>
+            )}
+            {isSaving && (
+                <div className="fixed inset-0 z-50 backdrop-blur-xs flex items-center justify-center bg-black/20 transition-opacity">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>
+                    <span className="text-sm font-medium animate-pulse">
+                        Menyimpan...
                     </span>
                 </div>
             </div>
