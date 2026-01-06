@@ -12,7 +12,7 @@ export default function App() {
     const [search, setSearch] = useState("")
     const [debouncedSearch, setDebouncedSearch] = useState("")
     const categoryParam = searchParams.get("category")
-    const selectedCategory = categories.find(cat => cat.name === categoryParam) || null
+    const selectedCategory = categories.find(cat => cat.id == categoryParam) || null
     const [isSortOpen, setIsSortOpen] = useState(false)
     const sortMenuRef = useRef(null)
     const sortBy = searchParams.get("sort") || "latest"
@@ -42,12 +42,12 @@ export default function App() {
         isLoading,
         isPlaceholderData
     } = useQuery({
-        queryKey: ['notes', page, debouncedSearch, categoryParam, sortBy],
+        queryKey: ['notes', page, debouncedSearch, selectedCategory?.name, sortBy],
         queryFn: () => getNotes({
             page: page,
             size: 12,
             search: debouncedSearch,
-            category: categoryParam || '',
+            category: selectedCategory ? selectedCategory.name : '',
             sort: sortBy
         }),
         placeholderData: keepPreviousData,
@@ -58,18 +58,18 @@ export default function App() {
         if (notesData?.paging?.total_page > page) {
             const nextPage = page + 1
             queryClient.prefetchQuery({
-                queryKey: ['notes', nextPage, debouncedSearch, categoryParam, sortBy],
+                queryKey: ['notes', nextPage, debouncedSearch, selectedCategory?.name, sortBy],
                 queryFn: () => getNotes({
                     page: nextPage,
                     size: 12,
                     search: debouncedSearch,
-                    category: categoryParam || '',
+                    category: selectedCategory ? selectedCategory.name : '',
                     sort: sortBy
                 }),
                 staleTime: 5000
             })
         }
-    }, [notesData, page, queryClient, debouncedSearch, categoryParam, sortBy])
+    }, [notesData, page, queryClient, debouncedSearch, selectedCategory, sortBy])
 
     const notes = notesData?.data || []
     const totalPages = notesData?.paging?.total_page || 0
@@ -241,7 +241,7 @@ export default function App() {
                             </div>
                             <div ref={menuRef} onClick={() => setIsOpen(!isOpen)} className="text-gray-500 select-none cursor-pointer relative">
                                 <div className="p-3 h-full xl:w-35 rounded-xl flex items-center justify-center bg-white border-gray-100 border-2 shadow-sm">
-                                    <span>{categoryParam ? categoryParam : "Kategori"}</span>
+                                    <span>{selectedCategory ? selectedCategory.name : "Kategori"}</span>
                                     <svg
                                         className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,7 +273,7 @@ export default function App() {
                                                     className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400"
                                                     onClick={() => {
                                                         setSearchParams(prev => {
-                                                            prev.set("category", cat.name)
+                                                            prev.set("category", cat.id)
                                                             prev.set("page", 1)
                                                             return prev
                                                         })
