@@ -241,7 +241,7 @@ export default function App() {
                             </div>
                             <div ref={menuRef} onClick={() => setIsOpen(!isOpen)} className="text-gray-500 select-none cursor-pointer relative">
                                 <div className="p-3 h-full xl:w-35 rounded-xl flex items-center justify-center bg-white border-gray-100 border-2 shadow-sm">
-                                    <span>{selectedCategory ? selectedCategory.name : "Kategori"}</span>
+                                    <span>{categoryParam ? categoryParam : "Kategori"}</span>
                                     <svg
                                         className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
