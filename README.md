@@ -37,19 +37,3 @@ Proyek ini menerapkan arsitektur **Monorepo** (Frontend & Backend terpisah) dan 
 * **Error Handling:** Penanganan error yang rapi, mencegah aplikasi *crash* saat terjadi kesalahan data.
 
 ---
-### set up
-
-kaliat install aja seperti biasa .env nya di bawah ↙
-
-.env backend :
-
-* DATABASE_URL
-
-* FRONTEND_URL
-
-* NODE_ENV
-
-.env frontend :
-
-* VITE_API_URL
-___
