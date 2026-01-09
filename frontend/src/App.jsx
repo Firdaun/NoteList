@@ -6,24 +6,23 @@ import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-quer
 export default function App() {
     const [isOpen, setIsOpen] = useState(false)
     const menuRef = useRef(null)
-    const [categories, setCategories] = useState([])
     const [searchParams, setSearchParams] = useSearchParams()
     const page = parseInt(searchParams.get("page") || "1")
     const [search, setSearch] = useState("")
     const [debouncedSearch, setDebouncedSearch] = useState("")
-    const categoryParam = searchParams.get("category")
-    const selectedCategory = categories.find(cat => cat.id == categoryParam) || null
     const [isSortOpen, setIsSortOpen] = useState(false)
     const sortMenuRef = useRef(null)
     const sortBy = searchParams.get("sort") || "latest"
     const queryClient = useQueryClient()
-
-    useEffect(() => {
-        getCategories()
-            .then(res => setCategories(res.data))
-            .catch(err => console.error("Gagal load kategori", err))
-    }, [])
-
+    const { data : categoriesData} = useQuery({ 
+        queryKey: ['categories'],
+        queryFn: getCategories,
+        staleTime: 1000 * 60 * 5
+    })
+    const categories = categoriesData?.data || []
+    const categoryParam = searchParams.get("category")
+    const selectedCategory = categories.find(cat => cat.id === Number(categoryParam)) || null
+    
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(search)
@@ -51,7 +50,7 @@ export default function App() {
             sort: sortBy
         }),
         placeholderData: keepPreviousData,
-        staleTime: 5000
+        staleTime: 1000 * 60 * 5
     })
 
     useEffect(() => {

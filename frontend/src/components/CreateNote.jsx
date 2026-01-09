@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { createCategory, createNote, deleteCategory, getCategories, getNoteById, updateCategory, updateNote } from "../lib/note-api"
 import { alertConfirm, alertError, alertSuccess } from "../lib/alert"
+import { useQueryClient } from "@tanstack/react-query"
 
 export default function CreateNote() {
     const [isOpen, setIsOpen] = useState(false)
@@ -22,6 +23,7 @@ export default function CreateNote() {
     const categoryInputRef = useRef(null)
     const isEditMode = Boolean(id)
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
 
     useEffect(() => {
         getCategories()
@@ -70,6 +72,8 @@ export default function CreateNote() {
             }
             setIsSaving(false)
             setEditingCategoryId(null)
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+            queryClient.invalidateQueries({ queryKey: ['notes'] })
             alertSuccess("Kategori berhasil diubah!")
         } catch (error) {
             alertError(error.message)
@@ -89,6 +93,8 @@ export default function CreateNote() {
                 setSelectedCategory(null)
             }
             setIsDeleting(false)
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+            queryClient.invalidateQueries({ queryKey: ['notes'] })
             alertSuccess("Kategori dihapus.")
         } catch (error) {
             setIsDeleting(false)
@@ -113,10 +119,12 @@ export default function CreateNote() {
         }
         setIsLoading(true)
         try {
+            queryClient.invalidateQueries({ queryKey: ['notes'] })
             let finalCategoryId = selectedCategory?.id
             if (isCreating && newCategoryName) {
                 const newCat = await createCategory(newCategoryName)
                 finalCategoryId = newCat.id
+                queryClient.invalidateQueries({ queryKey: ['categories'] })
             }
             const payload = {
                 title,
