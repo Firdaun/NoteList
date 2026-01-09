@@ -1,35 +1,27 @@
-import { useEffect, useRef, useState } from "react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useParams } from "react-router"
 import { createCategory, createNote, deleteCategory, getCategories, getNoteById, updateCategory, updateNote } from "../lib/note-api"
 import { alertConfirm, alertError, alertSuccess } from "../lib/alert"
-import { useQueryClient } from "@tanstack/react-query"
+import { useEffect, useRef, useState } from "react"
 
 export default function CreateNote() {
     const [isOpen, setIsOpen] = useState(false)
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
-    const [categories, setCategories] = useState([])
     const [selectedCategory, setSelectedCategory] = useState(null)
     const [newCategoryName, setNewCategoryName] = useState('')
     const [isCreating, setIsCreating] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
-    const [isFetching, setIsFetching] = useState(true)
     const [editingCategoryId, setEditingCategoryId] = useState(null)
     const [editCategoryName, setEditCategoryName] = useState('')
     const [isDeleting, setIsDeleting] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const queryClient = useQueryClient()
     const { id } = useParams()
     const menuRef = useRef(null)
     const categoryInputRef = useRef(null)
     const isEditMode = Boolean(id)
     const navigate = useNavigate()
-    const queryClient = useQueryClient()
-
-    useEffect(() => {
-        getCategories()
-            .then(result => setCategories(result.data))
-            .catch(err => console.error('Gagal load category', err))
-    }, [])
 
     const handleSelectCategory = (category) => {
         if (editingCategoryId) return
@@ -58,28 +50,53 @@ export default function CreateNote() {
         setEditCategoryName('')
     }
 
+    const { data: categoriesData } = useQuery({
+        queryKey: ['categories'],
+        queryFn: getCategories,
+        staleTime: 1000 * 60 * 5,
+    })
+
+    const categories = categoriesData?.data || []
+
+    const { data: noteData, isLoading: isLoadingNote } = useQuery({
+        queryKey: ['notes', id],
+        queryFn: () => getNoteById(id),
+        enabled: isEditMode,
+        staleTime: 1000 * 60 * 5,
+    })
+
+    useEffect(() => {
+        if (noteData) {
+            setTitle(noteData.title)
+            setContent(noteData.content)
+
+            if (noteData.category && categories.length > 0) {
+                const foundCategory = categories.find(cat => cat.id === noteData.category.id)
+                setSelectedCategory(foundCategory || noteData.category)
+            } else if (noteData.category) {
+                setSelectedCategory(noteData.category)
+            }
+        }
+    }, [noteData, categories])
+
     const saveEditing = async (e, categoryId) => {
         e.stopPropagation()
         if (!editCategoryName.trim()) return alertError("Nama kategori tidak boleh kosong")
         setIsSaving(true)
         try {
             await updateCategory(categoryId, editCategoryName)
-            setCategories(prev => prev.map(cat =>
-                cat.id === categoryId ? { ...cat, name: editCategoryName } : cat
-            ))
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+            queryClient.invalidateQueries({ queryKey: ['notes'] })
             if (selectedCategory?.id === categoryId) {
                 setSelectedCategory(prev => ({ ...prev, name: editCategoryName }))
             }
             setIsSaving(false)
             setEditingCategoryId(null)
-            queryClient.invalidateQueries({ queryKey: ['categories'] })
-            queryClient.invalidateQueries({ queryKey: ['notes'] })
             alertSuccess("Kategori berhasil diubah!")
         } catch (error) {
             alertError(error.message)
         }
     }
-
 
     const handleDeleteCategory = async (e, categoryId) => {
         e.stopPropagation()
@@ -88,13 +105,12 @@ export default function CreateNote() {
         setIsDeleting(true)
         try {
             await deleteCategory(categoryId)
-            setCategories(prev => prev.filter(cat => cat.id !== categoryId))
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+            queryClient.invalidateQueries({ queryKey: ['notes'] })
             if (selectedCategory?.id === categoryId) {
                 setSelectedCategory(null)
             }
             setIsDeleting(false)
-            queryClient.invalidateQueries({ queryKey: ['categories'] })
-            queryClient.invalidateQueries({ queryKey: ['notes'] })
             alertSuccess("Kategori dihapus.")
         } catch (error) {
             setIsDeleting(false)
@@ -117,9 +133,8 @@ export default function CreateNote() {
         if (!selectedCategory && !newCategoryName) {
             return alertError('Pilih kategori atau buat yang baru')
         }
-        setIsLoading(true)
+        setIsSubmitting(true)
         try {
-            queryClient.invalidateQueries({ queryKey: ['notes'] })
             let finalCategoryId = selectedCategory?.id
             if (isCreating && newCategoryName) {
                 const newCat = await createCategory(newCategoryName)
@@ -134,16 +149,18 @@ export default function CreateNote() {
             if (isEditMode) {
                 await updateNote(id, payload)
                 await alertSuccess("Catatan berhasil diperbarui!")
+                queryClient.invalidateQueries({ queryKey: ['notes'] })
                 navigate(-1)
             } else {
                 await createNote(payload)
                 await alertSuccess("Catatan berhasil dibuat!")
+                queryClient.invalidateQueries({ queryKey: ['notes'] })
                 navigate('/')
             }
         } catch (error) {
             alertError(error.message)
         } finally {
-            setIsLoading(false)
+            setIsSubmitting(false)
         }
     }
 
@@ -152,6 +169,7 @@ export default function CreateNote() {
             categoryInputRef.current.focus()
         }
     }, [isCreating])
+
     useEffect(() => {
         function handleClickOutside(e) {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -166,32 +184,7 @@ export default function CreateNote() {
         }
     }, [])
 
-    useEffect(() => {
-        const initData = async () => {
-            try {
-                const catResult = await getCategories()
-                setCategories(catResult.data)
-                if (isEditMode) {
-                    const noteData = await getNoteById(id)
-                    setTitle(noteData.title)
-                    setContent(noteData.content)
-                    if (noteData.category) {
-                        setSelectedCategory(noteData.category)
-                    }
-                }
-            } catch (error) {
-                console.error("Gagal memuat data", error)
-                if (isEditMode) {
-                    alertError("Gagal memuat catatan untuk diedit.")
-                    navigate('/')
-                }
-            } finally {
-                setIsFetching(false)
-            }
-        }
-        initData()
-    }, [id, isEditMode, navigate])
-    if (isEditMode && isFetching) {
+    if (isEditMode && isLoadingNote) {
         return (
             <div className="max-w-7xl h-dvh w-11/12 mx-auto flex flex-col pt-16 animate-pulse">
                 <div className="flex items-center gap-4 my-8">
@@ -364,11 +357,11 @@ export default function CreateNote() {
 
                     <div className="flex justify-end items-center gap-4 pt-4 border-t border-gray-100">
                         <button
-                            disabled={isLoading}
+                            disabled={isSubmitting}
                             type="submit"
                             className={`flex items-center justify-center gap-2 px-6 py-2 rounded-lg text-sm font-medium text-white transition shadow-md
-                            ${isLoading ? 'bg-fuchsia-300 cursor-not-allowed' : 'bg-fuchsia-400 hover:bg-fuchsia-500 focus:ring-4 cursor-pointer'}`}>
-                            {isLoading ? (
+                            ${isSubmitting ? 'bg-fuchsia-300 cursor-not-allowed' : 'bg-fuchsia-400 hover:bg-fuchsia-500 focus:ring-4 cursor-pointer'}`}>
+                            {isSubmitting ? (
                                 <>
                                     <span>Menyimpan...</span>
                                 </>
@@ -379,7 +372,7 @@ export default function CreateNote() {
                     </div>
                 </div>
             </form>
-            {(isDeleting || isSaving || isLoading) && (
+            {(isDeleting || isSaving || isSubmitting) && (
                 <div className="fixed inset-0 z-50 backdrop-blur-xs flex items-center justify-center bg-black/20 transition-opacity">
                     <div className="flex flex-col items-center gap-4">
                         <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>

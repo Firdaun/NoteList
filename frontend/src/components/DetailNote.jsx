@@ -2,20 +2,20 @@ import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { deleteNote, getNoteById } from "../lib/note-api"
 import { alertConfirm, alertError, alertSuccess } from "../lib/alert"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 export default function DetailNote() {
     const { id } = useParams()
     const navigate = useNavigate()
-    const [note, setNote] = useState(null)
-    const [loading, setLoading] = useState(true)
     const [isDeleting, setIsDeleting] = useState(false)
+    const queryClient = useQueryClient()
 
-    useEffect(() => {
-        getNoteById(id)
-            .then(data => setNote(data))
-            .catch(err => console.error(err))
-            .finally(() => setLoading(false))
-    }, [id, navigate])
+    const { data: note, isLoading } = useQuery({
+        queryKey: ['notes', id],
+        queryFn: () => getNoteById(id),
+        staleTime: 1000 * 60 * 5,
+        enabled: !!id,
+    })
 
     const handleDelete = async () => {
         const isConfirmed = await alertConfirm("Yakin ingin menghapus catatan ini?")
@@ -23,6 +23,7 @@ export default function DetailNote() {
         setIsDeleting(true)
         try {
             await deleteNote(id)
+            queryClient.invalidateQueries({ queryKey: ['notes'] })
             setIsDeleting(false)
             await alertSuccess("Catatan berhasil dihapus!")
             navigate("/")
@@ -38,7 +39,7 @@ export default function DetailNote() {
         return new Date(dateString).toLocaleDateString('id-ID', options)
     }
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="pt-27 min-h-[calc(100vh-64px)] bg-white py-10">
                 <div className="max-w-3xl w-[90%] mx-auto animate-pulse">
