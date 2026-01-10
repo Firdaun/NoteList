@@ -69,7 +69,6 @@ export default function CreateNote() {
         if (noteData) {
             setTitle(noteData.title)
             setContent(noteData.content)
-
             if (noteData.category && categories.length > 0) {
                 const foundCategory = categories.find(cat => cat.id === noteData.category.id)
                 setSelectedCategory(foundCategory || noteData.category)
@@ -295,7 +294,6 @@ export default function CreateNote() {
                                     {categories.map((cat) => (
                                         <li key={cat.id} className="flex group justify-between hover:bg-gray-100 items-center">
                                             {editingCategoryId === cat.id ? (
-
                                                 <div className="flex-1 flex items-center px-2 py-1 gap-2 bg-fuchsia-50">
                                                     <input
                                                         type="text"

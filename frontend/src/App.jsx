@@ -8,13 +8,15 @@ export default function App() {
     const menuRef = useRef(null)
     const [searchParams, setSearchParams] = useSearchParams()
     const page = parseInt(searchParams.get("page") || "1")
-    const [search, setSearch] = useState("")
-    const [debouncedSearch, setDebouncedSearch] = useState("")
+    const initialSearch = searchParams.get("search") || ""
+    const [search, setSearch] = useState(initialSearch)
     const [isSortOpen, setIsSortOpen] = useState(false)
+    const [debouncedSearch, setDebouncedSearch] = useState(initialSearch)
     const sortMenuRef = useRef(null)
     const sortBy = searchParams.get("sort") || "latest"
     const queryClient = useQueryClient()
-    const { data : categoriesData} = useQuery({ 
+    const isManualClear = useRef(false)
+    const { data: categoriesData } = useQuery({
         queryKey: ['categories'],
         queryFn: getCategories,
         staleTime: 1000 * 60 * 5
@@ -22,16 +24,26 @@ export default function App() {
     const categories = categoriesData?.data || []
     const categoryParam = searchParams.get("category")
     const selectedCategory = categories.find(cat => cat.id === Number(categoryParam)) || null
-    
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(search)
-            if (search !== debouncedSearch) {
-                setSearchParams(prev => {
-                    prev.set("page", 1)
-                    return prev
-                })
+            if (isManualClear.current) {
+                isManualClear.current = false
+                return
             }
+            setSearchParams(prev => {
+                if (search) {
+                    prev.set("search", search)
+                } else {
+                    prev.delete("search")
+                }
+
+                if (search !== debouncedSearch) {
+                    prev.set("page", 1)
+                }
+                return prev
+            }, { replace: true })
         }, 500)
         return () => clearTimeout(timer)
     }, [search])
@@ -166,14 +178,17 @@ export default function App() {
             <section className="max-w-7xl w-[90%] mx-auto pt-10">
                 <div className="flex flex-col justify-between md:items-start mb-10 gap-4">
                     <div>
-                        <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                            Catatan Kamu <span className="text-2xl">✨</span>
+                        <h1 className="text-4xl flex items-center font-bold text-gray-800 mb-2">
+                            Catatan Kamu
+                            <div className="max-w-12 ml-3">
+                                <img src="/logo_buku.png" alt="Banner Promo" />
+                            </div>
                         </h1>
                         {isPlaceholderData && <p className="text-xs text-fuchsia-400 mt-1 animate-pulse">Memuat data baru...</p>}
                     </div>
                     <div className="flex flex-col-reverse md:flex-row w-full justify-between gap-5 md:gap-10">
                         <div className="flex md:w-full lg:w-110 xl:w-150 min-w-70 justify-between">
-                            <Link to='/createnote' className="rounded-xl group w-full flex gap-5 rounded-3xl border-2 border-dashed border-fuchsia-200 bg-fuchsia-50/50 hover:bg-fuchsia-50 hover:border-fuchsia-400 transition cursor-pointer">
+                            <Link to='/createnote' className="rounded-xl group w-full flex gap-5 border-2 border-dashed border-fuchsia-200 bg-fuchsia-50/50 hover:bg-fuchsia-50 hover:border-fuchsia-400 transition cursor-pointer">
                                 <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm text-fuchsia-400 group-hover:text-fuchsia-600 transition">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -228,11 +243,15 @@ export default function App() {
                                 />
                                 {search && (
                                     <div onClick={() => {
+                                        isManualClear.current = true
                                         setSearch("")
                                         setSearchParams(prev => {
-                                            prev.delete("category")
-                                            return prev
-                                        })
+                                            const params = new URLSearchParams(prev)
+                                            params.delete("search")
+                                            params.delete("category")
+                                            params.set("page", 1)
+                                            return params
+                                        }, { replace: true })
                                     }} className="absolute right-3 top-3.25 text-gray-400 group-focus-within:text-fuchsia-500 hover:cursor-pointer">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentcolor" viewBox="0 0 256 256"><path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
                                     </div>
@@ -422,7 +441,6 @@ export default function App() {
                         </nav>
                     </div>
                 )}
-
             </section>
         </div>
     )
