@@ -2,6 +2,7 @@ import { Link, useNavigate, useOutletContext } from "react-router";
 import { alertConfirm, alertError, alertInfo, alertSuccess } from "../lib/alert";
 import { logout, logoutAPI, updateUser } from "../lib/user-api";
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ProfilePage() {
     const navigate = useNavigate()
@@ -20,6 +21,8 @@ export default function ProfilePage() {
     const showPasswordWarning = () => {
         alertInfo("Jangan lupain passwordnya karena gak ada fitur reset password. Catet kalo perlu!");
     }
+
+    const queryClient = useQueryClient()
 
     useEffect(() => {
         if (user) {
@@ -97,6 +100,7 @@ export default function ProfilePage() {
             console.error('Gagal logout', error)
         } finally {
             logout()
+            queryClient.removeQueries()
             navigate('/login')
         }
 
