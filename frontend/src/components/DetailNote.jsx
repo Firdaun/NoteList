@@ -41,7 +41,7 @@ export default function DetailNote() {
 
     if (isLoading) {
         return (
-            <div className="pt-27 min-h-[calc(100vh-64px)] bg-white py-10">
+            <div className="pt-27 min-h-[calc(100vh-64px)] bg-white dark:bg-gray-950 py-10">
                 <div className="max-w-3xl w-[90%] mx-auto animate-pulse">
                     <div className="flex items-center gap-4 mb-8">
                         <div className="w-6 h-6 bg-gray-200 rounded-md"></div>
