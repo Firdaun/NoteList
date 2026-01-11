@@ -353,7 +353,7 @@ export default function CreateNote() {
                                 ></textarea>
                             </div>
 
-                            <div className="flex justify-end items-center gap-4 pt-4 border-t dark:border-gray-700 border-gray-100">
+                            <div className="flex justify-end items-center gap-4">
                                 <button
                                     disabled={isSubmitting}
                                     type="submit"
@@ -374,7 +374,7 @@ export default function CreateNote() {
                         <div className="fixed inset-0 z-50 backdrop-blur-xs flex items-center justify-center bg-black/20 transition-opacity">
                             <div className="flex flex-col items-center gap-4">
                                 <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>
-                                <span className="text-sm font-medium animate-pulse">
+                                <span className="text-sm dark:text-gray-300 font-medium animate-pulse">
                                     {isDeleting ? "Menghapus..." : "Menyimpan..."}
                                 </span>
                             </div>

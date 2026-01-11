@@ -3,3 +3,17 @@
 @theme {
     --font-sans: "Fredoka", "sans-serif";
 }
+@media (prefers-color-scheme: dark) {
+    .swal2-popup {
+        background-color: #111827 !important; /* gray-900 */
+        color: #f3f4f6 !important; /* gray-100 */
+        border: 1px solid #1f2937 !important; /* gray-800 */
+    }
+    .swal2-title {
+        color: oklch(87.2% 0.01 258.338) !important; /* gray-300 */
+    }
+
+    .swal2-html-container {
+        color: oklch(87.2% 0.01 258.338) !important; /* gray-300 */
+    }
+}

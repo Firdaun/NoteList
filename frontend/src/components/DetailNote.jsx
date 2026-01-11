@@ -44,30 +44,30 @@ export default function DetailNote() {
             <div className="pt-27 min-h-screen bg-white dark:bg-gray-950 py-10">
                 <div className="max-w-3xl w-[90%] mx-auto animate-pulse">
                     <div className="flex items-center gap-4 mb-8">
-                        <div className="w-6 h-6 bg-gray-200 rounded-md"></div>
+                        <div className="w-6 h-6 bg-gray-200 dark:bg-gray-800 rounded-md"></div>
                         <div className="space-y-2">
-                            <div className="h-8 w-48 bg-gray-200 rounded-lg"></div>
-                            <div className="h-4 w-64 bg-gray-200 rounded-md"></div>
+                            <div className="h-8 w-48 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
+                            <div className="h-4 w-64 bg-gray-200 dark:bg-gray-800 rounded-md"></div>
                         </div>
                     </div>
-                    <div className="border-2 border-gray-100 rounded-2xl p-8 shadow-sm h- relative overflow-hidden bg-gray-50">
-                        <div className="border-b-2 border-dashed border-gray-200 pb-6 mb-6">
+                    <div className="rounded-2xl p-8 shadow-sm relative overflow-hidden bg-gray-50 dark:bg-gray-900">
+                        <div className="border-b-2 border-gray-200 dark:border-gray-800 pb-6 mb-6">
                             <div className="flex justify-between items-center mb-4">
-                                <div className="h-8 w-27 bg-gray-200 rounded-full"></div>
-                                <div className="h-8 w-27 bg-gray-200 rounded-full"></div>
+                                <div className="h-8 w-27 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                                <div className="h-8 w-27 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
                             </div>
-                            <div className="h-10 w-3/4 bg-gray-200 rounded mb-2"></div>
+                            <div className="h-10 w-3/4 bg-gray-200 dark:bg-gray-800 rounded mb-2"></div>
                         </div>
                         <div className="space-y-4">
-                            <div className="h-4 bg-gray-200 rounded w-full"></div>
-                            <div className="h-4 bg-gray-200 rounded w-full"></div>
-                            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                            <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+                            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+                            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+                            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-5/6"></div>
+                            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-4/6"></div>
                         </div>
                     </div>
                     <div className="mt-8 flex justify-end gap-4">
-                        <div className="h-12 w-32 bg-gray-200 rounded-xl"></div>
-                        <div className="h-12 w-32 bg-gray-200 rounded-xl"></div>
+                        <div className="h-12 w-32 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                        <div className="h-12 w-32 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
                     </div>
                 </div>
             </div>
@@ -140,7 +140,7 @@ export default function DetailNote() {
                         <div className="fixed inset-0 z-50 backdrop-blur-xs flex items-center justify-center bg-black/20 transition-opacity">
                             <div className="flex flex-col items-center gap-4">
                                 <div className="w-12 h-12 border-4 border-fuchsia-200 border-t-fuchsia-400 rounded-full animate-spin"></div>
-                                <span className="text-sm font-medium animate-pulse">
+                                <span className="text-sm dark:text-gray-300 font-medium animate-pulse">
                                     Menghapus...
                                 </span>
                             </div>

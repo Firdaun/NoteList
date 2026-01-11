@@ -305,20 +305,20 @@ export default function App() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {isLoading && (
                         [...Array(11)].map((_, i) => (
-                            <div key={i} className="h-60 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm animate-pulse">
+                            <div key={i} className="h-60 bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-900 shadow-sm animate-pulse">
                                 <div className="flex justify-between items-start mb-4">
-                                    <div className="h-5 bg-gray-200 rounded w-1/3"></div>
-                                    <div className="h-5 bg-gray-200 rounded w-1/3"></div>
+                                    <div className="h-5 bg-gray-200 dark:bg-gray-800 rounded w-1/3"></div>
+                                    <div className="h-5 bg-gray-200 dark:bg-gray-800 rounded w-1/3"></div>
                                 </div>
 
-                                <div className="h-7 bg-gray-200 rounded w-3/4 mb-4"></div>
+                                <div className="h-7 bg-gray-200 dark:bg-gray-800 rounded w-3/4 mb-4"></div>
 
                                 <div className="space-y-2 mb-auto">
-                                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-full"></div>
+                                    <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+                                    <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
                                 </div>
 
-                                <div className="mt-14 h-4 bg-gray-200 rounded w-1/3"></div>
+                                <div className="mt-14 h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/3"></div>
                             </div>
                         ))
                     )}
@@ -368,7 +368,7 @@ export default function App() {
 
                 {totalPages > 1 && (
                     <div className="fixed bottom-6 left-0 w-full flex justify-center z-50 pointer-events-none">
-                        <nav className="pointer-events-auto flex items-center border border-white dark:border-gray-700 dark:bg-gray-900 bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-2">
+                        <nav className="pointer-events-auto flex items-center border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-2">
 
                             <button
                                 onClick={() => handlePageChange(page - 1)}
