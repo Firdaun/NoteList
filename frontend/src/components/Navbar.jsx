@@ -15,7 +15,7 @@ export default function Navbar({ user }) {
     }, [])
 
     return (
-        <nav className={`bg-fuchsia-50 fixed right-0 rounded-b-2xl left-0 z-10 ${isScrolled ? 'shadow-lg' : ''}`}>
+        <nav className={`bg-fuchsia-50 dark:bg-gray-900 fixed right-0 rounded-b-2xl left-0 z-10 ${isScrolled ? 'shadow-lg' : ''}`}>
             <div className="max-w-7xl w-[90%] mx-auto">
                 <div className="flex justify-between h-16 items-center">
                     <div className="shrink-0 flex items-center">
@@ -24,8 +24,8 @@ export default function Navbar({ user }) {
                         </div>
                     </div>
                     <div className="flex items-center">
-                        <span className="text-gray-700 text-sm font-medium mr-4">Hi, <span className="text-gray-900 font-semibold">{firstName}</span></span>
-                        <Link to="/profile" className="hover:cursor-pointer text-fuchsia-400 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-fuchsia-100 transition">
+                        <span className="text-gray-700 dark:text-gray-400 text-sm font-medium mr-4">Hi, <span className="text-gray-900 dark:text-gray-300 font-semibold">{firstName}</span></span>
+                        <Link to="/profile" className="hover:cursor-pointer text-fuchsia-400 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-fuchsia-100 dark:hover:bg-gray-700 transition">
                             Profile
                         </Link>
                     </div>

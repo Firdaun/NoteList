@@ -169,16 +169,11 @@ export default function App() {
     }, [])
 
     return (
-        <div className="pt-16 min-h-screen bg-gray-50 pb-27">
-            <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-fuchsia-200 rounded-full blur-3xl opacity-20"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-200 rounded-full blur-3xl opacity-20"></div>
-            </div>
-
+        <div className="pt-16 min-h-screen bg-gray-50 dark:bg-gray-950 pb-27">
             <section className="max-w-7xl w-[90%] mx-auto pt-10">
                 <div className="flex flex-col justify-between md:items-start mb-10 gap-4">
                     <div>
-                        <h1 className="text-4xl flex items-center font-bold text-gray-800 mb-2">
+                        <h1 className="text-4xl flex items-center font-bold text-gray-800 dark:text-gray-300 mb-2">
                             Catatan Kamu
                             <div className="max-w-12 ml-3">
                                 <img src="/logo_buku.png" alt="Banner Promo" />
@@ -188,8 +183,8 @@ export default function App() {
                     </div>
                     <div className="flex flex-col-reverse md:flex-row w-full justify-between gap-5 md:gap-10">
                         <div className="flex md:w-full lg:w-110 xl:w-150 min-w-70 justify-between">
-                            <Link to='/createnote' className="rounded-xl group w-full flex gap-5 border-2 border-dashed border-fuchsia-200 bg-fuchsia-50/50 hover:bg-fuchsia-50 hover:border-fuchsia-400 transition cursor-pointer">
-                                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm text-fuchsia-400 group-hover:text-fuchsia-600 transition">
+                            <Link to='/createnote' className="rounded-xl group w-full flex gap-5 border-2 border-dashed border-fuchsia-200 bg-fuchsia-50/50 dark:bg-gray-900/50 dark:hover:bg-gray-900 hover:bg-fuchsia-50 hover:border-fuchsia-400 transition cursor-pointer">
+                                <div className="w-12 h-12 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center shadow-sm text-fuchsia-400 group-hover:text-fuchsia-600 transition">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                     </svg>
@@ -198,7 +193,7 @@ export default function App() {
                             </Link>
 
                             <div ref={sortMenuRef} onClick={() => setIsSortOpen(!isSortOpen)} className="relative cursor-pointer select-none">
-                                <div className="p-3 hover:cursor-pointer w-26 xl:w-35 text-gray-500 h-full rounded-xl flex items-center justify-center bg-white border-gray-100 border-2 shadow-sm">
+                                <div className="p-3 hover:cursor-pointer w-26 xl:w-35 text-gray-500 dark:text-gray-400 h-full rounded-xl flex items-center justify-center bg-white dark:bg-gray-900 dark:border-gray-900 border-gray-100 border-2 shadow-sm">
                                     <h1>{getSortLabel()}</h1>
                                     <svg
                                         className={`w-4 h-4 transition-transform ${isSortOpen ? 'rotate-180' : ''}`}
@@ -206,7 +201,7 @@ export default function App() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </div>
-                                <div className={`absolute top-full right-2 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 transition-all duration-200 ease-out origin-top-right
+                                <div className={`absolute top-full right-2 mt-2 w-56 bg-white dark:bg-gray-900 dark:border-gray-900 border border-gray-200 rounded-md shadow-lg z-50 transition-all duration-200 ease-out origin-top-right
                                 ${isSortOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
                                     <ul className="py-1 max-h-60 overflow-y-auto">
                                         {sortOptions.map((option) => (
@@ -218,7 +213,7 @@ export default function App() {
                                                         return prev
                                                     })
                                                 }}
-                                                    className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400">
+                                                    className="block px-4 py-2 text-sm hover:bg-gray-100 text-gray-500 dark:text-gray-400  dark:hover:bg-gray-800 hover:text-fuchsia-400">
                                                     {option.label}
                                                 </div>
                                             </li>
@@ -238,7 +233,7 @@ export default function App() {
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     type="text"
-                                    className="block w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-100 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-fuchsia-300 transition-all shadow-sm"
+                                    className="block w-full pl-12 pr-4 py-3 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-900 bg-white border-2 border-gray-100 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-fuchsia-300 transition-all shadow-sm"
                                     placeholder="Cari catatan..."
                                 />
                                 {search && (
@@ -257,8 +252,8 @@ export default function App() {
                                     </div>
                                 )}
                             </div>
-                            <div ref={menuRef} onClick={() => setIsOpen(!isOpen)} className="text-gray-500 select-none cursor-pointer relative">
-                                <div className="p-3 h-full xl:w-35 rounded-xl flex items-center justify-center bg-white border-gray-100 border-2 shadow-sm">
+                            <div ref={menuRef} onClick={() => setIsOpen(!isOpen)} className="text-gray-500 dark:text-gray-400 select-none cursor-pointer relative">
+                                <div className="p-3 h-full dark:bg-gray-900 dark:border-gray-900 xl:w-35 rounded-xl flex items-center justify-center bg-white border-gray-100 border-2 shadow-sm">
                                     <span>{selectedCategory ? selectedCategory.name : "Kategori"}</span>
                                     <svg
                                         className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -266,7 +261,7 @@ export default function App() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </div>
-                                <div className={`absolute top-full right-2 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 transition-all duration-200 ease-out origin-top-right
+                                <div className={`absolute dark:bg-gray-900 dark:border-gray-900 top-full right-2 mt-2 w-56 bg-white rounded-md shadow-lg z-50 transition-all duration-200 ease-out origin-top-right
                                 ${isOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
                                     <ul className="py-1 max-h-60 overflow-y-auto">
 
@@ -279,8 +274,8 @@ export default function App() {
                                                         return prev
                                                     })
                                                 }}
-                                                className={`block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400 cursor-pointer border-b border-gray-50 font-semibold
-                                                ${selectedCategory === null ? 'text-fuchsia-500' : 'text-gray-600'}`}>
+                                                className={`block px-4 py-2 text-sm dark:hover:bg-gray-800 hover:bg-gray-100 hover:text-fuchsia-400 cursor-pointer
+                                                ${selectedCategory === null ? 'text-fuchsia-500' : 'text-gray-400'}`}>
                                                 Semua Kategori
                                             </div>
                                         </li>
@@ -288,7 +283,7 @@ export default function App() {
                                         {categories.map((cat) => (
                                             <li key={cat.id}>
                                                 <div
-                                                    className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-fuchsia-400"
+                                                    className="block px-4 py-2 text-sm dark:hover:bg-gray-800 hover:bg-gray-100 hover:text-fuchsia-400"
                                                     onClick={() => {
                                                         setSearchParams(prev => {
                                                             prev.set("category", cat.id)
@@ -338,11 +333,11 @@ export default function App() {
                         <Link
                             key={note.id}
                             to={`/${note.id}`}
-                            className="relative justify-between flex flex-col h-60 bg-white rounded-2xl p-6 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                            className="relative justify-between flex flex-col h-60 bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-fuchsia-400 to-pink-400 opacity-100 transition-opacity"></div>
                             <div>
                                 <div className="flex justify-between items-start ">
-                                    <span className="text-xs font-bold px-2 py-1 rounded-lg bg-fuchsia-100 text-fuchsia-600 transition-colors uppercase tracking-wider">
+                                    <span className="text-xs font-bold px-2 py-1 rounded-lg dark:bg-fuchsia-200 bg-fuchsia-100 text-fuchsia-600 transition-colors uppercase tracking-wider">
                                         {note.category ? note.category.name : 'Uncategorized'}
                                     </span>
                                     <span className="text-xs text-gray-400 font-medium">
@@ -355,7 +350,7 @@ export default function App() {
                                 </h2>
 
                                 <div className="overflow-hidden h-25.5">
-                                    <p className="text-gray-500 text-sm break-all leading-relaxed">
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm break-all leading-relaxed">
                                         {note.content ? note.content.substring(0, 150) + (note.content.length > 150 ? "..." : "") : ""}
                                     </p>
                                 </div>
@@ -373,15 +368,15 @@ export default function App() {
 
                 {totalPages > 1 && (
                     <div className="fixed bottom-6 left-0 w-full flex justify-center z-50 pointer-events-none">
-                        <nav className="pointer-events-auto flex items-center bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 p-2 transition-all transform hover:-translate-y-1">
+                        <nav className="pointer-events-auto flex items-center border border-white dark:border-gray-700 dark:bg-gray-900 bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-2">
 
                             <button
                                 onClick={() => handlePageChange(page - 1)}
                                 disabled={page === 1}
-                                className={`cursor-pointer px-3 py-2 rounded-xl transition-all duration-200 flex items-center font-medium text-sm
+                                className={`cursor-pointer px-3 py-2 rounded-xl flex items-center font-medium text-sm
                                     ${page === 1
-                                        ? 'text-gray-300 cursor-not-allowed'
-                                        : 'text-gray-600 hover:bg-fuchsia-50 hover:text-fuchsia-500'}`}>
+                                        ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                                        : 'text-gray-600 dark:text-gray-200 hover:bg-fuchsia-50 hover:text-fuchsia-500'}`}>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 mr-1">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                                 </svg>
@@ -394,7 +389,7 @@ export default function App() {
                                         <button
                                             key={'prev-' + index}
                                             onClick={() => handlePageChange(page - 3)}
-                                            className="cursor-pointer w-10 h-10 flex items-center justify-center text-gray-400 hover:bg-fuchsia-50 hover:text-fuchsia-500 rounded-xl transition-colors font-bold pb-2"
+                                            className="cursor-pointer w-10 h-10 flex items-center justify-center text-gray-400 hover:bg-fuchsia-50 hover:text-fuchsia-500 rounded-xl font-bold pb-2"
                                             title="Mundur 3 halaman">
                                             ...
                                         </button>
@@ -406,7 +401,7 @@ export default function App() {
                                         <button
                                             key={'next-' + index}
                                             onClick={() => handlePageChange(page + 3)}
-                                            className="cursor-pointer w-10 h-10 flex items-center justify-center text-gray-400 hover:bg-fuchsia-50 hover:text-fuchsia-500 rounded-xl transition-colors font-bold pb-2"
+                                            className="cursor-pointer w-10 h-10 flex items-center justify-center text-gray-400 hover:bg-fuchsia-50 hover:text-fuchsia-500 rounded-xl font-bold pb-2"
                                             title="Lompat 3 halaman">
                                             ...
                                         </button>
@@ -417,10 +412,10 @@ export default function App() {
                                     <button
                                         key={item}
                                         onClick={() => handlePageChange(item)}
-                                        className={`cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl font-bold transition-all
+                                        className={`cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl font-bold
                                             ${page === item
-                                                ? 'bg-linear-to-r from-fuchsia-400 to-pink-400 text-white shadow-md shadow-fuchsia-200 transform scale-105'
-                                                : 'text-gray-500 hover:bg-fuchsia-50 hover:text-fuchsia-500'}`}>
+                                                ? 'bg-linear-to-r from-fuchsia-400 to-pink-400 text-white transform scale-105'
+                                                : 'text-gray-500 dark:text-gray-400 hover:bg-fuchsia-50 hover:text-fuchsia-500'}`}>
                                         {item}
                                     </button>
                                 )
@@ -431,8 +426,8 @@ export default function App() {
                                 disabled={page === totalPages}
                                 className={`cursor-pointer px-3 py-2 rounded-xl transition-all duration-200 flex items-center font-medium text-sm
                                     ${page === totalPages
-                                        ? 'text-gray-300 cursor-not-allowed'
-                                        : 'text-gray-600 hover:bg-fuchsia-50 hover:text-fuchsia-500'}`}>
+                                        ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                                        : 'text-gray-600 dark:text-gray-200 hover:bg-fuchsia-50 hover:text-fuchsia-500'}`}>
                                 Next
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 ml-1">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />

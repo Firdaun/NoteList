@@ -55,7 +55,7 @@ export default function Login() {
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block dark:text-gray-300 text-sm font-semibold text-gray-700 mb-2">
                         Username
                     </label>
                     <input
@@ -66,11 +66,11 @@ export default function Login() {
                         type="text"
                         name="username"
                         placeholder="Masukkan username"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
+                        className="w-full dark:text-gray-300 px-4 py-3 rounded-lg border dark:placeholder:text-gray-500 border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block dark:text-gray-300 text-sm font-semibold text-gray-700 mb-2">
                         Password
                     </label>
                     <input
@@ -87,7 +87,7 @@ export default function Login() {
                         type="password"
                         name="password"
                         placeholder="Masukkan password"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
+                        className="w-full dark:text-gray-300 px-4 py-3 rounded-lg border dark:placeholder:text-gray-500 border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
                     />
                 </div>
                 <button
@@ -98,7 +98,7 @@ export default function Login() {
                     {isLoading ? "Loading..." : "Masuk"}
                 </button>
             </form>
-            <p className="mt-8 text-center text-sm text-gray-600">
+            <p className="mt-8 text-center dark:text-gray-300 text-sm text-gray-600">
                 Tidak punya akun?{' '}
                 <Link to="/register" className="font-semibold text-fuchsia-400 hover:text-fuchsia-500 hover:underline transition duration-200">
                     Register

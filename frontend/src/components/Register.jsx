@@ -58,14 +58,14 @@ export default function Register() {
 
     return (
         <>
-            <Link to="/login"><svg className="absolute" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg></Link>
+            <Link to="/login"><svg className="absolute dark:text-gray-300" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg></Link>
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold text-fuchsia-400">Register</h1>
                 <p className="text-gray-500 mt-2">Buat akun baru</p>
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block dark:text-gray-300 text-sm font-semibold text-gray-700 mb-2">
                         Username
                     </label>
                     <input
@@ -76,11 +76,11 @@ export default function Register() {
                         type="text"
                         name="username"
                         placeholder="Masukkan username"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
+                        className="w-full dark:placeholder:text-gray-500 dark:text-gray-300 px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block dark:text-gray-300 text-sm font-semibold text-gray-700 mb-2">
                         Name
                     </label>
                     <input
@@ -91,11 +91,11 @@ export default function Register() {
                         type="text"
                         name="name"
                         placeholder="Masukkan nama"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
+                        className="w-full dark:placeholder:text-gray-500 dark:text-gray-300 px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
                     />
                 </div>
                 <div>
-                    <label className="flex text-sm font-semibold text-gray-700 mb-2">
+                    <label className="flex dark:text-gray-300 text-sm font-semibold text-gray-700 mb-2">
                         Password
                         <button className="ml-1 cursor-pointer" type="button">
                             <svg onClick={showPasswordWarning} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="oklch(74% 0.238 322.16)" className="w-5 h-5">
@@ -117,7 +117,7 @@ export default function Register() {
                         value={formData.password}
                         onChange={handleChange}
                         placeholder="Masukkan password"
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
+                        className="w-full dark:placeholder:text-gray-500 dark:text-gray-300 px-4 py-3 rounded-lg border border-gray-300 focus:border-fuchsia-300 focus:ring-2 focus:ring-fuchsia-300 outline-none transition duration-200"
                     />
                 </div>
                 <button
