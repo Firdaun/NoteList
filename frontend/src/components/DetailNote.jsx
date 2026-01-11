@@ -39,7 +39,7 @@ export default function DetailNote() {
         return new Date(dateString).toLocaleDateString('id-ID', options)
     }
 
-    if (true) {
+    if (isLoading) {
         return (
             <div className="pt-27 min-h-screen bg-white dark:bg-gray-950 py-10">
                 <div className="max-w-3xl w-[90%] mx-auto animate-pulse">
