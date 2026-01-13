@@ -31,7 +31,13 @@ export const loginUser = async (data) => {
     const result = await response.json();
 
     if (!response.ok) {
-        throw new Error(result.errors || "Login gagal");
+        const error = new Error(result.errors || result.message || "Login gagal");
+        error.status = response.status;
+        
+        if (result.retryAfter) {
+            error.retryAfter = result.retryAfter; 
+        }
+        throw error;
     }
 
     return result;

@@ -1,11 +1,12 @@
 import express from "express"
 import { userController } from "../controller/user.controller.js"
 import { prismaClient } from "../application/database.js"
+import { dynamicRateLimiter } from "../middleware/rate-limit.middleware.js"
 
 const publicRouter = new express.Router()
 
 publicRouter.post('/api/users/register', userController.register)
-publicRouter.post('/api/users/login', userController.login)
+publicRouter.post('/api/users/login', dynamicRateLimiter, userController.login)
 
 publicRouter.get('/api/ping', async (req, res) => {
     try {

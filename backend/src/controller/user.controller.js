@@ -1,3 +1,4 @@
+import { incrementFailCount, resetRateLimit } from "../middleware/rate-limit.middleware.js"
 import { userService } from "../service/user.service.js"
 
 const register = async (req, res, next) => {
@@ -14,6 +15,7 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
     try {
         const result = await userService.login(req.body)
+        resetRateLimit(req)
         res.cookie('token', result.token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -27,6 +29,14 @@ const login = async (req, res, next) => {
             }
         })
     } catch (e) {
+        const blockDuration = incrementFailCount(req)
+        if (blockDuration > 0) {
+            return res.status(429).json({
+                status: "ERROR",
+                message: `Limit Habis! Tunggu ${blockDuration} detik.`,
+                retryAfter: blockDuration
+            })
+        }
         next(e)
     }
 }
