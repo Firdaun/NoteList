@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router";
 
 export default function Navbar({ user }) {
     const [isScrolled, setIsScrolled] = useState(false)
-
     const firstName = user?.name ? user.name.split(" ")[0] : "User"
 
     useEffect(() => {
