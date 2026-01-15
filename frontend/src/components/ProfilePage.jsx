@@ -1,6 +1,6 @@
 import { Link, useNavigate, useOutletContext } from "react-router";
 import { alertConfirm, alertError, alertInfo, alertSuccess } from "../lib/alert";
-import { logout, logoutAPI, updateUser } from "../lib/user-api";
+import { deleteUser, logout, logoutAPI, updateUser } from "../lib/user-api";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -18,6 +18,7 @@ export default function ProfilePage() {
         newPassword: "",
         confirmPassword: ""
     })
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false)
     const showPasswordWarning = () => {
         alertInfo("Jangan lupain passwordnya karena gak ada fitur reset password. Catet kalo perlu!");
     }
@@ -103,8 +104,24 @@ export default function ProfilePage() {
             queryClient.removeQueries()
             navigate('/login')
         }
-
     }
+
+    const handleDeleteAccount = async () => {
+        const isConfirmed = await alertConfirm('Apakah kamu yakin ingin menghapus akunmu? Tindakan ini tidak dapat dibatalkan.')
+        if (!isConfirmed) return
+        setIsDeletingAccount(true)
+        try {
+            await deleteUser()
+            logout()
+            queryClient.removeQueries()
+            await alertSuccess('Akun berhasil dihapus.')
+            navigate('/register')
+        } catch (error) {
+            isDeletingAccount(false)
+            alertError(error.message)
+        }
+    }
+
     return (
         <div className="pt-16 min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 relative overflow-hidden">
 
@@ -176,6 +193,12 @@ export default function ProfilePage() {
                                 <button onClick={handleLogout} className="w-full py-3 px-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-200 dark:shadow-gray-800 hover:shadow-red-300 dark:hover:shadow-gray-800 transition-all cursor-pointer flex justify-center items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M120,216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H56V208h56A8,8,0,0,1,120,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L204.69,120H112a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,229.66,122.34Z"></path></svg>
                                     Logout
+                                </button>
+                            </div>
+                            <div className="mt-5">
+                                <button onClick={handleDeleteAccount} disabled={isDeletingAccount} className="w-full py-3 px-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-200 dark:shadow-gray-800 hover:shadow-red-300 dark:hover:shadow-gray-800 transition-all cursor-pointer flex justify-center items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M120,216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H56V208h56A8,8,0,0,1,120,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L204.69,120H112a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,229.66,122.34Z"></path></svg>
+                                    {isDeletingAccount ? "Menghapus..." : "Hapus Akun"}
                                 </button>
                             </div>
                         </div>

@@ -86,6 +86,17 @@ export const logoutAPI = async () => {
     return result
 }
 
-
+export const deleteUser = async () => {
+    const response = await fetch(`${BASE_URL}/api/users/current`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {'accept': 'application/json'}
+    })
+    const result = await response.json()
+    if (!response.ok) {
+        throw new Error(result.errors || 'Gagal menghapus akun')
+    }
+    return result
+}
 
 export const logout = () => localStorage.removeItem('user')
