@@ -1,5 +1,5 @@
 import { Link, useNavigate, useOutletContext } from "react-router";
-import { alertConfirm, alertError, alertInfo, alertSuccess } from "../lib/alert";
+import { alertConfirm, alertDeleteAccount, alertError, alertInfo, alertSuccess } from "../lib/alert";
 import { deleteUser, logout, logoutAPI, updateUser } from "../lib/user-api";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -107,7 +107,7 @@ export default function ProfilePage() {
     }
 
     const handleDeleteAccount = async () => {
-        const isConfirmed = await alertConfirm('Apakah kamu yakin ingin menghapus akunmu? Tindakan ini tidak dapat dibatalkan.')
+        const isConfirmed = await alertDeleteAccount(user.username)
         if (!isConfirmed) return
         setIsDeletingAccount(true)
         try {

@@ -3,6 +3,12 @@
 @theme {
     --font-sans: "Fredoka", "sans-serif";
 }
+
+.swal2-validation-message {
+    background-color: #ffffff !important; /* bg-white */
+    color: #ef4444 !important; /* (red-500) */
+}
+
 @media (prefers-color-scheme: dark) {
     .swal2-popup {
         background-color: #111827 !important; /* gray-900 */
@@ -15,5 +21,10 @@
 
     .swal2-html-container {
         color: oklch(87.2% 0.01 258.338) !important; /* gray-300 */
+    }
+
+    .swal2-validation-message {
+        background-color: #111827 !important; /* gray-900 */
+        color: #fca5a5 !important;
     }
 }
