@@ -269,7 +269,6 @@ export default function ProfilePage() {
                                     </div>
                                 </div>
                             </div>
-
                             <div className="mt-auto">
                                 <button onClick={handleUpdatePassword} disabled={isPasswordLoading} className="hover:text-purple-600 w-full py-3 px-4 border-2 font-bold rounded-xl border-purple-200 text-purple-500 bg-purple-50 hover:bg-purple-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-800 dark:hover:border-gray-700 transition-all cursor-pointer flex justify-center items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
