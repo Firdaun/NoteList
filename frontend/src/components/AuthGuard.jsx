@@ -53,6 +53,5 @@ export const GuestRoute = ({ children }) => {
     if (isAuth) {
         return <Navigate to='/' replace />
     }
-
     return children || <Outlet />
 }
