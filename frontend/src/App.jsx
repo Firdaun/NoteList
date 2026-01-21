@@ -252,7 +252,6 @@ export default function App() {
                                     </div>
                                 )}
                             </div>
-                            
                             <div ref={menuRef} onClick={() => setIsOpen(!isOpen)} className="text-gray-500 dark:text-gray-400 select-none cursor-pointer relative">
                                 <div className="p-3 h-full dark:bg-gray-900 dark:border-gray-900 xl:w-35 rounded-xl flex items-center justify-center bg-white border-gray-100 border-2 shadow-sm">
                                     <span>{selectedCategory ? selectedCategory.name : "Kategori"}</span>
